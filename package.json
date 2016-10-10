@@ -1,0 +1,12 @@
+{
+    "name": "photos",
+    "private": true,
+    "scripts": {
+        "bower": "./node_modules/.bin/bower",
+        "build": "rm -rf build && ./node_modules/.bin/polymer build"
+    },
+    "devDependencies": {
+        "bower": "1.7.9",
+        "polymer-cli": "0.16.0"
+    }
+}

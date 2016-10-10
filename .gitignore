@@ -1,0 +1,10 @@
+*swp
+*swo
+.DS_Store*
+._*
+.Spotlight-V100
+.Trashes
+
+bower_components/
+build/
+node_modules/
