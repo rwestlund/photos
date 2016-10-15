@@ -1,0 +1,29 @@
+/*
+ * Copyright (c) 2016, Randy Westlund. All rights reserved.
+ * This code is under the BSD-2-Clause license.
+ *
+ * This is the config file for the application. It must be copied to
+ * src/config/config.go and modified.
+ */
+package config
+
+/* Format: [address]:port, passed to http.ListenAndServe(). */
+var ListenAddress string = ":3000"
+
+/* Paramaters for connecting to a local PostgreSQL database. */
+var DatabaseUserName string = "photos"
+var DatabaseName string = "photos"
+
+/*
+ * The following variables are used in OAuth, and must be set to your
+ * deployment-specific values.
+ */
+
+/* Google OAuth client id. */
+var OAuthClientID string = your value here!
+
+/* Google OAuth client secret. */
+var OAuthClientSecret string = your value here!
+
+/* The hostname in the URL where this server can be found. */
+var LocalHostName string = "photos.textplain.net"
