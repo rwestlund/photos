@@ -61,15 +61,13 @@ func main() {
 		image			bytea NOT NULL
     )`)
 	wrap_sql(db, `CREATE TABLE tags (
-        id          	serial PRIMARY KEY,
-        name            text NOT NULL,
-		cover_image_id	integer REFERENCES photos(id) NOT NULL,
-		UNIQUE (name)
+        name            text PRIMARY KEY,
+		cover_image_id	integer REFERENCES photos(id) NOT NULL
     )`)
 	wrap_sql(db, `CREATE TABLE tagged_photos (
         photo_id	integer REFERENCES photos(id) ON DELETE CASCADE NOT NULL,
-        tag_id    	integer REFERENCES tags(id) ON DELETE CASCADE NOT NULL,
-        UNIQUE (photo_id, tag_id)
+        tag_name   	text REFERENCES tags(name) ON DELETE CASCADE NOT NULL,
+        UNIQUE (photo_id, tag_name)
     )`)
 
 	log.Println("complete")

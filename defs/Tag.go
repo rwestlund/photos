@@ -9,7 +9,6 @@
 package defs
 
 type Tag struct {
-	Id           uint32 `json:"id"`
 	Name         string `json:"name"`
 	CoverImageId uint32 `json:"cover_image_id"`
 }
