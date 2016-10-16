@@ -1,0 +1,27 @@
+<!--
+    Copyright (c) 2016. Randy Westlund and Jacqueline Kory Westlund.
+    All rights reserved.
+    This code is under the BSD-2-Clause license.
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/vaadin-upload/vaadin-upload.html">
+
+<dom-module id="photos-uploads">
+    <template>
+        <h2>uploads yay!</h2>
+        <vaadin-upload target="/api/uploads/" accept="image/*,video/*">
+            <div class="drop-label">
+                <iron-icon icon="icons:file-upload"></iron-icon>
+                Drag photos here!
+            </div>
+        </vaadin-upload>
+    </template>
+
+    <script>
+        'use strict';
+        Polymer({
+            is: "photos-uploads",
+        })
+    </script>
+</dom-module>

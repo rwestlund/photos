@@ -1,3 +1,10 @@
+<!--
+    Copyright (c) 2016. Randy Westlund and Jacqueline Kory Westlund.
+    All rights reserved.
+    This code is under the BSD-2-Clause license.
+-->
+
+
 <link rel="import" href="../bower_components/app-layout/app-layout.html">
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
@@ -9,6 +16,8 @@
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../bower_components/polymer/polymer.html">
+
+<link rel="import" href="photos-uploads.html">
 
 <dom-module id="photos-app">
   <template>
@@ -65,6 +74,12 @@
                         Users
                     </paper-item>
                 </a>
+                <a href="/uploads/">
+                    <paper-item>
+                        <iron-icon icon="icons:file-upload"></iron-icon>
+                        Uploads
+                    </paper-item>
+                </a>
             </paper-menu>
         </app-drawer>
 
@@ -101,6 +116,10 @@
                     <h2>users!</h2>
                 </section>
 
+                <section name="uploads">
+                    <photos-uploads></photos-uploads>
+                </section>
+
                 <section name="404">
                     <h2>404!</h2>
                 </section>
@@ -111,6 +130,7 @@
   </template>
 
   <script>
+    'use strict';
     Polymer({
 
       is: 'photos-app',
