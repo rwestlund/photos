@@ -52,6 +52,7 @@ func main() {
     )`)
 	wrap_sql(db, `CREATE TABLE photos (
         id          	serial PRIMARY KEY,
+		filename		text NOT NULL,
 		mimetype		text NOT NULL,
 		size			integer NOT NULL,
         creation_date   timestamp WITH TIME ZONE NOT NULL

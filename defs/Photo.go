@@ -13,8 +13,9 @@ import (
 
 type Photo struct {
 	Id           uint32    `json:"id"`
+	Filename     string    `json:"filename"`
 	Mimetype     string    `json:"mimetype"`
-	Size         uint32    `json:"size"`
+	Size         int64     `json:"size"`
 	CreationDate time.Time `json:"creation_date"`
 	AuthorId     uint32    `json:"author_id"`
 	Caption      string    `json:"caption"`

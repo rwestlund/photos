@@ -20,7 +20,7 @@ import (
 /* SQL to select photos. */
 var query_rows string = `
 	SELECT photos.id, photos.mimetype, photos.size, photos.creation_date,
-		photos.author_id, photos.caption,
+		photos.author_id, photos.caption, photos.filename, tp.tags
 	FROM photos
 	LEFT JOIN LATERAL (
 		SELECT COALESCE(json_agg(tagged_photos.tag_name), '[]'::json)
@@ -37,7 +37,7 @@ func scan_photo(row *sql.Rows) (*defs.Photo, error) {
 	var p defs.Photo
 
 	err := row.Scan(&p.Id, &p.Mimetype, &p.Size, &p.CreationDate, &p.AuthorId,
-		&p.Caption, &tags)
+		&p.Caption, &p.Filename, &tags)
 	if err != nil {
 		return nil, err
 	}
@@ -159,14 +159,16 @@ func FetchPhoto(id uint32) (*defs.Photo, error) {
  * in the passed object.
  * TODO this doesn't work yet
  */
-func CreatePhoto(photo *defs.Photo) (*defs.Photo, error) {
+func CreatePhoto(photo *defs.Photo, file []byte) (*defs.Photo, error) {
 	var rows *sql.Rows
 	var err error
 	//TODO some input validation would be nice
-	rows, err = DB.Query(`INSERT INTO photos (caption, mimetype, author_id)
-            VALUES ($1, $2, $3)
+	rows, err = DB.Query(`
+			INSERT INTO photos (caption, mimetype, author_id, filename, size, image)
+            VALUES ($1, $2, $3, $4, $5, $6)
                 RETURNING id`,
-		photo.Caption, photo.Mimetype, photo.AuthorId)
+		photo.Caption, photo.Mimetype, photo.AuthorId, photo.Filename,
+		photo.Size, file)
 	if err != nil {
 		return nil, err
 	}
