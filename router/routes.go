@@ -9,102 +9,102 @@
 package router
 
 import (
-    "net/http"
+	"net/http"
 )
 
 /* Routes are a list of these structs. */
 type Route struct {
-    name    string
-    methods []string
-    pattern string
-    handler http.HandlerFunc
+	name    string
+	methods []string
+	pattern string
+	handler http.HandlerFunc
 }
 type Routes []Route
 
 /* Define the actual routes here. */
-var routes = Routes {
-    Route {
-        "auth",
-        []string{ "GET" },
-        "/auth/google/login",
-        oauth_redirect,
-    },
-    Route {
-        "auth",
-        []string{ "GET" },
-        "/auth/google/return",
-        handle_oauth_callback,
-    },
-    Route {
-        "logout",
-        []string{ "GET" },
-        "/auth/logout",
-        handle_logout,
-    },
-    Route {
-        "photo",
-        []string{ "GET", "HEAD" },
-        "/api/photos/{id:[0-9]+}",
-        handle_photo,
-    },
-    Route {
-        "photos",
-        []string{ "GET", "HEAD" },
-        "/api/photos",
-        handle_photos,
-    },
-    Route {
-        "users",
-        []string{ "GET", "HEAD" },
-        "/api/users",
-        handle_users,
-    },
-    Route {
-        "photos",
-        []string{ "POST", "PUT" },
-        "/api/photos",
-        handle_put_or_post_photo,
-    },
-    Route {
-        "photos",
-        []string{ "POST", "PUT" },
-        "/api/photos/{id:[0-9]+}",
-        handle_put_or_post_photo,
-    },
-    Route {
-        "photos",
-        []string{ "DELETE" },
-        "/api/photos/{id:[0-9]+}",
-        handle_delete_photo,
-    },
-    Route {
-        "users",
-        []string{ "POST" },
-        "/api/users",
-        handle_post_or_put_user,
-    },
-    Route {
-        "users",
-        []string{ "POST" },
-        "/api/users",
-        handle_post_or_put_user,
-    },
-    Route {
-        "users",
-        []string{ "PUT" },
-        "/api/users/{id:[0-9]+}",
-        handle_post_or_put_user,
-    },
-    Route {
-        "users",
-        []string{ "DELETE" },
-        "/api/users/{id:[0-9]+}",
-        handle_delete_user,
-    },
-    Route {
-        "tags",
-        []string{ "GET", "HEAD" },
-        "/tags",
-        handle_get_tags,
-    },
+var routes = Routes{
+	Route{
+		"auth",
+		[]string{"GET"},
+		"/auth/google/login",
+		oauth_redirect,
+	},
+	Route{
+		"auth",
+		[]string{"GET"},
+		"/auth/google/return",
+		handle_oauth_callback,
+	},
+	Route{
+		"logout",
+		[]string{"GET"},
+		"/auth/logout",
+		handle_logout,
+	},
+	Route{
+		"photo",
+		[]string{"GET", "HEAD"},
+		"/api/photos/{id:[0-9]+}",
+		handle_photo,
+	},
+	Route{
+		"photos",
+		[]string{"GET", "HEAD"},
+		"/api/photos",
+		handle_photos,
+	},
+	Route{
+		"users",
+		[]string{"GET", "HEAD"},
+		"/api/users",
+		handle_users,
+	},
+	Route{
+		"photos",
+		[]string{"POST"},
+		"/api/photos",
+		handle_post_photo,
+	},
+	Route{
+		"photos",
+		[]string{"PUT"},
+		"/api/photos/{id:[0-9]+}",
+		handle_put_photo,
+	},
+	Route{
+		"photos",
+		[]string{"DELETE"},
+		"/api/photos/{id:[0-9]+}",
+		handle_delete_photo,
+	},
+	Route{
+		"users",
+		[]string{"POST"},
+		"/api/users",
+		handle_post_or_put_user,
+	},
+	Route{
+		"users",
+		[]string{"POST"},
+		"/api/users",
+		handle_post_or_put_user,
+	},
+	Route{
+		"users",
+		[]string{"PUT"},
+		"/api/users/{id:[0-9]+}",
+		handle_post_or_put_user,
+	},
+	Route{
+		"users",
+		[]string{"DELETE"},
+		"/api/users/{id:[0-9]+}",
+		handle_delete_user,
+	},
+	Route{
+		"tags",
+		[]string{"GET", "HEAD"},
+		"/tags",
+		handle_get_tags,
+	},
 }
