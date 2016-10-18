@@ -77,6 +77,7 @@ func handle_put_photo(res http.ResponseWriter, req *http.Request) {
 	usr, err = check_auth(res, req)
 	if err != nil {
 		res.WriteHeader(500)
+		log.Println(err)
 		return
 	}
 	if usr == nil {
@@ -132,19 +133,20 @@ func handle_post_photo(res http.ResponseWriter, req *http.Request) {
 	/* Access control. */
 	var err error
 	var usr *defs.User
-	  usr, err = check_auth(res, req)
-	  if err != nil {
-	      res.WriteHeader(500)
-	      return
-	  }
-	  if usr == nil {
-	      res.WriteHeader(401)
-	      return
-	  }
-	  if usr.Role != "Admin" {
-	      res.WriteHeader(403)
-	      return
-	  }
+	usr, err = check_auth(res, req)
+	if err != nil {
+		res.WriteHeader(500)
+		log.Println(err)
+		return
+	}
+	if usr == nil {
+		res.WriteHeader(401)
+		return
+	}
+	if usr.Role != "Admin" {
+		res.WriteHeader(403)
+		return
+	}
 
 	res.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
@@ -244,6 +246,7 @@ func handle_delete_photo(res http.ResponseWriter, req *http.Request) {
 	usr, err = check_auth(res, req)
 	if err != nil {
 		res.WriteHeader(500)
+		log.Println(err)
 		return
 	}
 	if usr == nil {
@@ -293,6 +296,7 @@ func handle_users(res http.ResponseWriter, req *http.Request) {
 	usr, err = check_auth(res, req)
 	if err != nil {
 		res.WriteHeader(500)
+		log.Println(err)
 		return
 	}
 	if usr == nil {
@@ -337,6 +341,7 @@ func handle_post_or_put_user(res http.ResponseWriter, req *http.Request) {
 	usr, err = check_auth(res, req)
 	if err != nil {
 		res.WriteHeader(500)
+		log.Println(err)
 		return
 	}
 	if usr == nil {
@@ -406,6 +411,7 @@ func handle_delete_user(res http.ResponseWriter, req *http.Request) {
 	usr, err = check_auth(res, req)
 	if err != nil {
 		res.WriteHeader(500)
+		log.Println(err)
 		return
 	}
 	if usr == nil {
