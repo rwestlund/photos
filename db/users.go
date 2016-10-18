@@ -18,7 +18,7 @@ import (
 /* SQL to select users. */
 var users_query string = `
 	SELECT users.id, users.email, users.name,
-		users.role, users.lastlog, users.creation_date,
+		users.role, users.lastlog, users.creation_date
 	FROM users`
 
 func scan_user(rows *sql.Rows) (*defs.User, error) {
@@ -228,8 +228,7 @@ func GoogleLogin(email string, name string, token string) (*defs.User, error) {
 func FetchUserByToken(token string) (*defs.User, error) {
 	var rows *sql.Rows
 	var err error
-	rows, err = DB.Query(users_query+
-		`WHERE users.token = $1 GROUP BY users.id`, token)
+	rows, err = DB.Query(users_query+` WHERE users.token = $1`, token)
 	if err != nil {
 		return nil, err
 	}
