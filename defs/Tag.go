@@ -9,6 +9,7 @@
 package defs
 
 type Tag struct {
-	Name         string `json:"name"`
-	CoverImageId uint32 `json:"cover_image_id"`
+	Name string `json:"name"`
+	/* See the comment in db/tags.go:scan_tag() for why this is a pointer. */
+	CoverImageId *uint32 `json:"cover_image_id"`
 }
