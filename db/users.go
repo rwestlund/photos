@@ -21,6 +21,7 @@ var users_query string = `
 		users.role, users.lastlog, users.creation_date
 	FROM users`
 
+/* Read a user from SQL rows into a User object. */
 func scan_user(rows *sql.Rows) (*defs.User, error) {
 	var u defs.User
 	/*

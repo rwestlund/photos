@@ -491,3 +491,63 @@ func handle_get_tags(res http.ResponseWriter, req *http.Request) {
 	}
 	res.Write(*tags)
 }
+
+func handle_put_or_post_tags(res http.ResponseWriter, req *http.Request) {
+	/* Access control. */
+	var usr *defs.User
+	var err error
+	usr, err = check_auth(res, req)
+	if err != nil {
+		res.WriteHeader(500)
+		log.Println(err)
+		return
+	}
+	if usr == nil {
+		res.WriteHeader(401)
+		return
+	}
+	if usr.Role != "Admin" {
+		res.WriteHeader(403)
+		return
+	}
+
+	res.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+	/* Decode body. */
+	var tag defs.Tag
+	err = json.NewDecoder(req.Body).Decode(&tag)
+	if err != nil {
+		log.Println(err)
+		res.WriteHeader(400)
+		return
+	}
+
+	var new_tag *defs.Tag
+	/* Update a tag in the database. */
+	if req.Method == "PUT" {
+		/* Get name parameter. */
+		var params map[string]string = mux.Vars(req)
+		new_tag, err = db.UpdateTag(params["name"], &tag)
+
+		/* Create new tag in DB. */
+	} else {
+		new_tag, err = db.CreateTag(&tag)
+	}
+
+	if err != nil {
+		log.Println(err)
+		res.WriteHeader(400)
+		return
+	}
+
+	/* Send it back. */
+	j, e := json.Marshal(new_tag)
+	if e != nil {
+		log.Println(e)
+		res.WriteHeader(500)
+		return
+	}
+	/* If we made it here, send good response. */
+	res.Write(j)
+
+}

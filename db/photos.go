@@ -236,7 +236,8 @@ func SavePhoto(photo *defs.Photo) (*defs.Photo, error) {
 		return nil, err
 	}
 	/* Insert the new tags. */
-	/* TODO add new tags that don't exist yet */
+	/* We assume that all the tags exist in the tags table; otherwise we'll
+	 * get an error and we'll fail to save. */
 	var tag string
 	for _, tag = range photo.Tags {
 		_, err = tx.Exec(`INSERT INTO tagged_photos (photo_id, tag_name)
