@@ -154,6 +154,29 @@ func FetchPhoto(id uint32) (*defs.Photo, error) {
 	return p, nil
 }
 
+/* Fetch one photo image by id. */
+func FetchPhotoImage(id uint32) ([]byte, error) {
+	/* Read photo from database. */
+	var rows *sql.Rows
+	var err error
+	rows, err = DB.Query("SELECT image FROM photos WHERE id = $1", id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	/* Make sure we have a row returned. */
+	if !rows.Next() {
+		return nil, sql.ErrNoRows
+	}
+
+	var image []byte
+	err = rows.Scan(&image)
+	if err != nil {
+		return nil, err
+	}
+	return image, nil
+}
+
 /*
  * Take a reference to a Photo and create it in the database, returning fields
  * in the passed object.

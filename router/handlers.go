@@ -236,6 +236,38 @@ func handle_photo(res http.ResponseWriter, req *http.Request) {
 }
 
 /*
+ * Request a specific photo.
+ * GET /api/photo/3/image
+ */
+func handle_photo_image(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-Type", "application/binary")
+
+	/* Get id parameter. */
+	var params map[string]string = mux.Vars(req)
+	bigid, err := strconv.ParseUint(params["id"], 10, 32)
+	if err != nil {
+		log.Println(err)
+		res.WriteHeader(400)
+		return
+	}
+	var id uint32 = uint32(bigid)
+
+	var image []byte
+	image, err = db.FetchPhotoImage(id)
+	if err == sql.ErrNoRows {
+		res.WriteHeader(404)
+		return
+	} else if err != nil {
+		res.WriteHeader(500)
+		log.Println(err)
+		return
+	}
+
+	/* If we made it here, send good response. */
+	res.Write(image)
+}
+
+/*
  * Delete a photo by id.
  * DELETE /api/photos/4
  */
