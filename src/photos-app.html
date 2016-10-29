@@ -13,6 +13,7 @@
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
@@ -36,6 +37,7 @@
 <link rel="import" href="photo-display.html">
 <link rel="import" href="photos-forms.html">
 <link rel="import" href="photo-form.html">
+<link rel="import" href="tag-form.html">
 
 <dom-module id="photos-app">
   <template>
@@ -71,6 +73,20 @@
         }
     </style>
 
+    <iron-ajax id="post_ajax"
+                method="POST"
+                url="/api/tags"
+                body="[[item_to_edit]]"
+                content-type="application/json"
+                handle-as="json"
+                last-response="{{item_to_edit}}"
+                on-response="post_item_successful"
+                on-error="post_item_failed"
+                loading="{{loading}}">
+    </iron-ajax>
+
+
+
     <app-drawer-layout fullbleed responsive-width="900px">
         <app-drawer id="drawer" swipe-open>
             <app-toolbar></app-toolbar>
@@ -99,6 +115,13 @@
                     </paper-item>
                 </a>
             </paper-menu>
+            <hr>
+            <paper-button raised on-tap="create_tag">
+                <iron-icon icon="icons:add"></iron-icon>
+                Create tag
+            </paper-button>
+            <paper-spinner active="[[loading]]">
+            </paper-spinner>
         </app-drawer>
 
         <app-header-layout fullbleed>
@@ -171,7 +194,40 @@
 
       toggle_drawer: function() {
           this.$.drawer.toggle();
+      },
+
+      // Opens the create tag modal.
+      create_tag: function() {
+          this.set('item_to_edit', {});
+          // Ask for the form to be opened.
+          this.fire("iron-signal", { name: "open-form",
+              data: {
+                  name: "create_tag_form",
+                  tag: this.item_to_edit,
+                  callback: "resolve_create_tag",
+                  that: this,
+              },
+          });
+      },
+
+      // Handle response from dialog. Reason is either confirmed or
+      // canceled.
+      resolve_create_tag: function(e, reason) {
+          if(!reason.confirmed) return;
+          // Override dirty checking; let Polymer know it changed.
+          var tmp = this.item_to_edit;
+          this.set("item_to_edit", {});
+          this.set("item_to_edit", tmp);
+          this.$.post_ajax.generateRequest();
+      },
+
+      post_item_successful: function() {
+          console.log("updated");
+      },
+      post_item_failed: function() {
+          console.log("failed to update")
       }
+
 
     });
   </script>

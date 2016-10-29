@@ -1,0 +1,38 @@
+<!--
+    Copyright (c) 2016. Randy Westlund and Jacqueline Kory Westlund.
+    All rights reserved.
+    This code is under the BSD-2-Clause license.
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="tag-form">
+    <template>
+        <responsive-dialog id="dialog"
+                title="Create tag"
+                dismiss-text="Cancel"
+                confirm-text="Save"
+                on-iron-overlay-closed="resolve_dialog">
+            <paper-input
+                    type="text"
+                    label="Tag"
+                    value="{{tag.name}}"
+                    autocapitalize="words"
+                    char-counter maxlength="20">
+            </paper-input>
+        </responsive-dialog>
+    </template>
+
+    <script>
+        'use strict';
+        Polymer({
+            is: "tag-form",
+            behaviors: [ photo_behaviors.form_behavior ],
+            properties: {
+                tag: {
+                    type: Object,
+                },
+            },
+        })
+    </script>
+</dom-module>

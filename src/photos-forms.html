@@ -11,6 +11,7 @@
         <iron-signals on-iron-signal-open-form="open_form"></iron-signals>
 
         <photo-form id="edit_photo_form"></photo-form>
+        <tag-form id="create_tag_form"></tag-form>
     </template>
 
     <script>
@@ -49,7 +50,7 @@
                 // If any of these properties are given from the signal, assign
                 // them to the form. This prevents needing a large switch to set
                 // up each form.
-                var props = [ "photo" ];
+                var props = [ "photo", "tag" ];
                 props.forEach(p => {
                     if (data[p]) this.$[data.name][p] = data[p];
                 });
