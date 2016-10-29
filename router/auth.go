@@ -129,17 +129,20 @@ func handle_oauth_callback(res http.ResponseWriter, req *http.Request) {
 	var role_cookie = http.Cookie{
 		Name:   "role",
 		Value:  user.Role,
+		Path:   "/",
 		Secure: true,
 	}
 	/* The client will display this. */
 	var name_cookie = http.Cookie{
 		Name:   "username",
 		Value:  user.Name,
+		Path:   "/",
 		Secure: true,
 	}
 	/* The client will this for visibility control. */
 	var user_id_cookie = http.Cookie{
 		Name:   "user_id",
+		Path:   "/",
 		Value:  strconv.FormatUint(uint64(user.Id), 10),
 		Secure: true,
 	}
@@ -156,6 +159,7 @@ func clear_cookies(res http.ResponseWriter) {
 	var auth_cookie = http.Cookie{
 		Name:     "authentication",
 		Value:    "",
+		Path:     "/",
 		Secure:   true,
 		HttpOnly: true,
 		MaxAge:   -1,
@@ -163,18 +167,21 @@ func clear_cookies(res http.ResponseWriter) {
 	var role_cookie = http.Cookie{
 		Name:   "role",
 		Value:  "",
+		Path:   "/",
 		Secure: true,
 		MaxAge: -1,
 	}
 	var name_cookie = http.Cookie{
 		Name:   "username",
 		Value:  "",
+		Path:   "/",
 		Secure: true,
 		MaxAge: -1,
 	}
 	var user_id_cookie = http.Cookie{
 		Name:   "user_id",
 		Value:  "",
+		Path:   "/",
 		Secure: true,
 		MaxAge: -1,
 	}
