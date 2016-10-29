@@ -1,0 +1,50 @@
+<!--
+    Copyright (c) 2016. Randy Westlund and Jacqueline Kory Westlund.
+    All rights reserved.
+    This code is under the BSD-2-Clause license.
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="photo-collection">
+    <template>
+        <style is="custom-style" include="app-grid-style"></style>
+        <style>
+            :host {
+                display: block;
+                    --app-grid-columns: 2;
+                    --app-grid-gutter: 15px;
+            }
+            @media (max-width: 800px) {
+                :host {
+                    --app-grid-columns: 1;
+                }
+            }
+        </style>
+
+        <iron-ajax
+            auto
+            method="GET"
+            url="/api/photos"
+            handle-as="json"
+            last-response="{{photos}}">
+        </iron-ajax>
+
+        <div class="app-grid">
+            <template is="dom-repeat" items="[[photos]]">
+                <photo-display photo="[[item]]"></photo-display>
+            </template>
+        </div>
+    </template>
+
+    <script>
+        'use strict';
+        Polymer({
+            is: "photo-collection",
+            // Reevaluated the app-grid styles on resize.
+            attached: function() {
+                window.addEventListener("resize", () => this.updateStyles());
+            },
+        })
+    </script>
+</dom-module>

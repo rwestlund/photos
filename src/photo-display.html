@@ -1,0 +1,43 @@
+<!--
+    Copyright (c) 2016. Randy Westlund and Jacqueline Kory Westlund.
+    All rights reserved.
+    This code is under the BSD-2-Clause license.
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="photo-display">
+    <template>
+        <style>
+            :host {
+                --iron-image-placeholder: {
+                    background: #dddddd;
+                }
+            }
+            iron-image {
+                --iron-image-width: 100%;
+                margin: 0px 5px;
+            }
+        </style>
+        <paper-material>
+            <iron-image src="/api/photos/[[photo.id]]/image" preload fade>
+            </iron-image>
+            <p>[[photo.filename]]</p>
+            <p>[[photo.caption]]</p>
+        </paper-material>
+
+    </template>
+
+    <script>
+        'use strict';
+        Polymer({
+            is: "photo-display",
+            properties: {
+                photo: {
+                    type: Object,
+                    value: {}
+                },
+            }
+        })
+    </script>
+</dom-module>
