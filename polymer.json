@@ -1,0 +1,10 @@
+{
+    "entrypoint": "index.html",
+    "shell": "src/photos-app.html",
+    "sources": [
+        "src/**/*"
+    ],
+    "includeDependencies": [
+        "bower_components/webcomponentsjs/webcomponents-lite.js"
+    ]
+}
