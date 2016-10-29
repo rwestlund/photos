@@ -34,23 +34,30 @@ func scan_tag(rows *sql.Rows) (*defs.Tag, error) {
 }
 
 /* Get a list of all tags in the database. */
-func FetchTags() (*[]byte, error) {
+func FetchTags() (*[]defs.Tag, error) {
 	var rows *sql.Rows
 	var err error
-	/* Return them all in one row. */
-	rows, err = DB.Query("SELECT json_agg(name ORDER BY name) FROM tags")
+	rows, err = DB.Query("SELECT name, cover_image_id FROM tags ORDER BY name")
 	if err != nil {
 		return nil, err
 	}
-	var tags []byte
+	defer rows.Close()
 
-	/* In this case, we just want an empty list if nothing was returned. */
-	if !rows.Next() {
-		return &tags, nil
+	/* The array we're going to fill. The append() builtin will approximately
+	 * double the capacity when it needs to reallocate, but we can save some
+	 * copying by starting at a decent number. */
+	var tags = make([]defs.Tag, 0, 20)
+	var tag *defs.Tag
+	/* Iterate over rows, reading in each Tag as we go. */
+	for rows.Next() {
+		tag, err = scan_tag(rows)
+		if err != nil {
+			return nil, err
+		}
+		/* Add it to our list. */
+		tags = append(tags, *tag)
 	}
-
-	/* This is alredy JSON, so just leave it as a []byte. */
-	err = rows.Scan(&tags)
+	err = rows.Err()
 	if err != nil {
 		return nil, err
 	}

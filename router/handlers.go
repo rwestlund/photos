@@ -481,7 +481,7 @@ func handle_delete_user(res http.ResponseWriter, req *http.Request) {
 }
 
 func handle_get_tags(res http.ResponseWriter, req *http.Request) {
-	var tags *[]byte
+	var tags *[]defs.Tag
 	var err error
 	tags, err = db.FetchTags()
 	if err != nil {
@@ -489,7 +489,14 @@ func handle_get_tags(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(500)
 		return
 	}
-	res.Write(*tags)
+	j, e := json.Marshal(tags)
+	if e != nil {
+		log.Println(e)
+		res.WriteHeader(500)
+		return
+	}
+	/* If we made it here, send good response. */
+	res.Write(j)
 }
 
 func handle_put_or_post_tags(res http.ResponseWriter, req *http.Request) {
