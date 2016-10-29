@@ -11,6 +11,7 @@
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../bower_components/iron-icons/image-icons.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/maps-icons.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
@@ -38,6 +39,7 @@
 <link rel="import" href="photos-forms.html">
 <link rel="import" href="photo-form.html">
 <link rel="import" href="tag-form.html">
+<link rel="import" href="cookie-display.html">
 
 <dom-module id="photos-app">
   <template>
@@ -71,6 +73,10 @@
             text-decoration: none;
             color: #111111;
         }
+
+        span.username {
+            padding-left: 5px;
+        }
     </style>
 
     <iron-ajax id="post_ajax"
@@ -85,7 +91,11 @@
                 loading="{{loading}}">
     </iron-ajax>
 
+    <cookie-display cookie-name="username" cookie-value="{{user_name}}">
+    </cookie-display>
 
+    <iron-media-query query="(max-width: 500px)" query-matches="{{mobile}}">
+    </iron-media-query>
 
     <app-drawer-layout fullbleed responsive-width="900px">
         <app-drawer id="drawer" swipe-open>
@@ -116,12 +126,35 @@
                 </a>
             </paper-menu>
             <hr>
-            <paper-button raised on-tap="create_tag">
-                <iron-icon icon="icons:add"></iron-icon>
-                Create tag
-            </paper-button>
-            <paper-spinner active="[[loading]]">
-            </paper-spinner>
+            <template is="dom-if" if="[[user_name]]">
+                <paper-button raised on-tap="create_tag">
+                    <iron-icon icon="icons:add"></iron-icon>
+                    Create tag
+                </paper-button>
+                <paper-spinner active="[[loading]]">
+                </paper-spinner>
+            </template>
+
+            <hr>
+            <paper-menu>
+            <template is="dom-if" if="[[!user_name]]">
+                <a href="/auth/google/login">
+                    <paper-item>
+                        <iron-icon icon="icons:account-circle"></iron-icon>
+                        Sign In
+                    </paper-item>
+                </a>
+            </template>
+            <template is="dom-if" if="[[user_name]]">
+                <a href="/auth/logout">
+                    <paper-item>
+                       <iron-icon icon="maps:directions-run"></iron-icon>
+                       Logout
+                    </paper-item>
+                </a>
+            </template>
+            </paper-menu>
+
         </app-drawer>
 
         <app-header-layout fullbleed>
@@ -130,10 +163,17 @@
                     <paper-icon-button icon="menu" drawer-toggle>
                     </paper-icon-button>
                     <div main-title>Photos</div>
+                    <template is="dom-if" if="[[!mobile]]">
+                        <template is="dom-if" if="[[user_name]]">
+                            <iron-icon icon="icons:account-circle"></iron-icon>
+                            <span class="username">Hi, [[user_name]]!</span>
+                        </template>
+                    </template>
                 </app-toolbar>
             </app-header>
 
-            <app-location route="{{route}}"></app-location>
+            <app-location route="{{route}}" url-space-regex="^/(?!(api|auth)/)">
+            </app-location>
             <app-route
                 route="{{route}}"
                 pattern="/:page"
