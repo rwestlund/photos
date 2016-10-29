@@ -27,3 +27,7 @@ var OAuthClientSecret string = your value here!
 
 /* The hostname in the URL where this server can be found. */
 var LocalHostName string = "photos.textplain.net"
+
+/* These users will be added as admins during resetdb. */
+var DefaultAdmins []string = []string{"jacqueline.kory@gmail.com",
+	"rwestlun@gmail.com"}

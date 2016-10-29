@@ -33,10 +33,10 @@ func main() {
 	}
 
 	log.Println("dropping old objects")
-	wrap_sql(db, "DROP TABLE IF EXISTS tagged_photos")
-	wrap_sql(db, "DROP TABLE IF EXISTS tags")
-	wrap_sql(db, "DROP TABLE IF EXISTS photos")
-	wrap_sql(db, "DROP TABLE IF EXISTS users")
+	wrap_sql(db, "DROP TABLE IF EXISTS tagged_photos", nil)
+	wrap_sql(db, "DROP TABLE IF EXISTS tags", nil)
+	wrap_sql(db, "DROP TABLE IF EXISTS photos", nil)
+	wrap_sql(db, "DROP TABLE IF EXISTS users", nil)
 
 	log.Println("creating new objects")
 
@@ -49,7 +49,7 @@ func main() {
         creation_date   timestamp WITH TIME ZONE NOT NULL
                             DEFAULT CURRENT_TIMESTAMP,
         lastlog         timestamp WITH TIME ZONE
-    )`)
+    )`, nil)
 	wrap_sql(db, `CREATE TABLE photos (
         id          	serial PRIMARY KEY,
 		filename		text NOT NULL,
@@ -60,22 +60,30 @@ func main() {
         author_id   	integer NOT NULL REFERENCES users(id),
 		caption			text NOT NULL DEFAULT '',
 		image			bytea NOT NULL
-    )`)
+    )`, nil)
 	wrap_sql(db, `CREATE TABLE tags (
         name            text PRIMARY KEY,
 		cover_image_id	integer REFERENCES photos(id) NOT NULL
-    )`)
+    )`, nil)
 	wrap_sql(db, `CREATE TABLE tagged_photos (
         photo_id	integer REFERENCES photos(id) ON DELETE CASCADE NOT NULL,
         tag_name   	text REFERENCES tags(name) ON DELETE CASCADE NOT NULL,
         UNIQUE (photo_id, tag_name)
-    )`)
+    )`, nil)
+
+	log.Println("inserting default values")
+
+	/* Add the default admins listed in the config file to the users table. */
+	for _, admin := range config.DefaultAdmins {
+		wrap_sql(db, `INSERT INTO users (email, role) VALUES ($1, $2)`,
+			[]interface{}{admin, "Admin"})
+	}
 
 	log.Println("complete")
 }
 
-func wrap_sql(db *sql.DB, s string) {
-	_, err := db.Exec(s)
+func wrap_sql(db *sql.DB, s string, params []interface{}) {
+	_, err := db.Exec(s, params...)
 	if err != nil {
 		log.Println("error during:", s)
 		log.Println(err)
