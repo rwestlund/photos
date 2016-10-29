@@ -4,7 +4,7 @@
     This code is under the BSD-2-Clause license.
 -->
 
-
+<!-- Polymer library components. -->
 <link rel="import" href="../bower_components/app-layout/app-layout.html">
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
@@ -14,17 +14,28 @@
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-image/iron-image.html">
-
+<link rel="import" href="../bower_components/iron-signals/iron-signals.html">
 <link rel="import" href="../bower_components/app-layout/app-grid/app-grid-style.html">
 
+<!-- Third party components. -->
+<link rel="import" href="../bower_components/polymer-responsive-dialog/responsive-dialog.html">
+
+<!-- Behaviors must come before elements that use them. -->
+<link rel="import" href="form-behavior.html">
+
+<!-- Custom elements. -->
 <link rel="import" href="photos-uploads.html">
 <link rel="import" href="photo-collection.html">
 <link rel="import" href="photo-display.html">
+<link rel="import" href="photos-forms.html">
+<link rel="import" href="photo-form.html">
 
 <dom-module id="photos-app">
   <template>
@@ -136,6 +147,9 @@
             </iron-pages>
         </app-header-layout>
     </app-drawer-layout>
+
+    <photos-forms></photos-forms>
+
   </template>
 
   <script>

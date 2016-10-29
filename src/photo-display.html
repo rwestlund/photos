@@ -19,13 +19,28 @@
                 margin: 0px 5px;
             }
         </style>
+
+        <iron-ajax id="put_ajax"
+                method="PUT"
+                url="/api/photos/[[photo.id]]"
+                body="[[item_to_edit]]"
+                content-type="application/json"
+                handle-as="json"
+                last-response="{{item_to_edit}}"
+                on-response="put_item_successful"
+                on-error="put_item_failed"
+                loading="{{loading}}">
+        </iron-ajax>
+
         <paper-material>
+            <paper-icon-button icon="icons:create" on-tap="edit_photo">
+            </paper-icon-button>
+            <paper-spinner active="[[loading]]"></paper-spinner>
             <iron-image src="/api/photos/[[photo.id]]/image" preload fade>
             </iron-image>
             <p>[[photo.filename]]</p>
             <p>[[photo.caption]]</p>
         </paper-material>
-
     </template>
 
     <script>
@@ -37,7 +52,45 @@
                     type: Object,
                     value: {}
                 },
+            },
+            // Opens the edit modal.
+            edit_photo: function() {
+                // Deep copy the object so we don't change the card's display
+                // until the save is successful.
+                this.set('item_to_edit',
+                        JSON.parse(JSON.stringify(this.photo)));
+                // Ask for the form to be opened.
+                this.fire("iron-signal", { name: "open-form",
+                    data: {
+                        name: "edit_photo_form",
+                        photo: this.item_to_edit,
+                        callback: "resolve_edit_photo",
+                        that: this,
+                    },
+                });
+            },
+            // Handle response from dialog. Reason is either confirmed or
+            // canceled.
+            resolve_edit_photo: function(e, reason) {
+                if(!reason.confirmed) return;
+                console.log(this.photo);
+                // Override dirty checking; let Polymer know it changed.
+                var tmp = this.item_to_edit;
+                this.set("item_to_edit", {});
+                this.set("item_to_edit", tmp);
+                this.$.put_ajax.generateRequest();
+            },
+            // Copy response from PUT to update the display. The rationale for
+            // not loading the PUT response directly into photo is to prevent
+            // a failed return status from clearing the display.
+            put_item_successful: function() {
+                this.set("photo", this.item_to_edit);
+                console.log("updated");
+            },
+            put_item_failed: function() {
+                console.log("failed to update")
             }
+
         })
     </script>
 </dom-module>

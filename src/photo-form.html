@@ -1,0 +1,38 @@
+<!--
+    Copyright (c) 2016. Randy Westlund and Jacqueline Kory Westlund.
+    All rights reserved.
+    This code is under the BSD-2-Clause license.
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="photo-form">
+    <template>
+        <responsive-dialog id="dialog"
+                title="Edit photo"
+                dismiss-text="Cancel"
+                confirm-text="Save"
+                on-iron-overlay-closed="resolve_dialog">
+            <paper-input
+                    type="text"
+                    label="Caption"
+                    value="{{photo.caption}}"
+                    autocapitalize="sentences"
+                    char-counter maxlength="140">
+            </paper-input>
+        </responsive-dialog>
+    </template>
+
+    <script>
+        'use strict';
+        Polymer({
+            is: "photo-form",
+            behaviors: [ photo_behaviors.form_behavior ],
+            properties: {
+                photo: {
+                    type: Object,
+                },
+            },
+        })
+    </script>
+</dom-module>

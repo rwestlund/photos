@@ -1,0 +1,60 @@
+<!--
+    Copyright (c) 2016. Randy Westlund and Jacqueline Kory Westlund.
+    All rights reserved.
+    This code is under the BSD-2-Clause license.
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="photos-forms">
+    <template>
+        <iron-signals on-iron-signal-open-form="open_form"></iron-signals>
+
+        <photo-form id="edit_photo_form"></photo-form>
+    </template>
+
+    <script>
+        'use strict';
+        Polymer({
+            is: "photos-forms",
+            properties: {
+                // A reference to the element that asked to open a form.
+                dialog_parent: {
+                    type: Object,
+                    value: null,
+                },
+                // The name of the callback function on the requesting element.
+                dialog_callback: {
+                    type: String,
+                },
+            },
+            listeners: {
+                // Every form fires a "closed" event. Rather than binding a
+                // listener to each one, let it bubble up and catch them all
+                // here.
+                "closed": "dialog_closed",
+            },
+            // On close, notify the element that asked for the form.
+            dialog_closed: function(e, reason) {
+                this.dialog_parent[this.dialog_callback](e, reason);
+            },
+
+            // Open whichever form was requested by iron-signals.
+            open_form: function(e, data) {
+                // Save a reference to the element that sent the request so we
+                // can tell it when the form closes.
+                this.dialog_parent = data.that;
+                // Save the callback.
+                this.dialog_callback = data.callback;
+                // If any of these properties are given from the signal, assign
+                // them to the form. This prevents needing a large switch to set
+                // up each form.
+                var props = [ "photo" ];
+                props.forEach(p => {
+                    if (data[p]) this.$[data.name][p] = data[p];
+                });
+                this.$[data.name].open();
+            }
+        })
+    </script>
+</dom-module>
