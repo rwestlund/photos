@@ -1,0 +1,115 @@
+<!--
+    Copyright (c) 2016. Randy Westlund and Jacqueline Kory Westlund.
+    All rights reserved.
+    This code is under the BSD-2-Clause license.
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="tag-display">
+    <template>
+        <style>
+            :host {
+                --iron-image-placeholder: {
+                    background: #dddddd;
+                }
+            }
+            iron-image {
+                --iron-image-width: 100%;
+                margin: 0px 5px;
+            }
+            a.plain {
+                color: inherit;
+                text-decoration: none;
+            }
+        </style>
+
+        <iron-ajax
+            auto="[[tag.cover_image_id]]"
+            method="GET"
+            url="/api/photos/[[tag.cover_image_id]]"
+            handle-as="json"
+            last-response="{{photo}}">
+        </iron-ajax>
+
+        <iron-ajax id="put_ajax"
+                method="PUT"
+                url="/api/photos/[[photo.id]]"
+                body="[[item_to_edit]]"
+                content-type="application/json"
+                handle-as="json"
+                last-response="{{item_to_edit}}"
+                on-response="put_item_successful"
+                on-error="put_item_failed"
+                loading="{{loading}}">
+        </iron-ajax>
+
+        <a href$="/albums/[[tag.name]]" class="plain">
+            <paper-material>
+                <paper-icon-button icon="icons:create" on-tap="edit_photo">
+                </paper-icon-button>
+                <paper-spinner active="[[loading]]"></paper-spinner>
+                <template is="dom-if" if="[[photo.id]]">
+                    <iron-image src="/api/photos/[[photo.id]]/image"
+                        preload fade>
+                    </iron-image>
+                </template>
+                <h3>[[tag.name]]</h3>
+            </paper-material>
+        </a>
+    </template>
+
+    <script>
+        'use strict';
+        Polymer({
+            is: "tag-display",
+            properties: {
+                tag: {
+                    type: String,
+                },
+                photo: {
+                    type: Object,
+                    value: {}
+                },
+            },
+            // Opens the edit modal.
+            edit_photo: function() {
+                // Deep copy the object so we don't change the card's display
+                // until the save is successful.
+                this.set('item_to_edit',
+                        JSON.parse(JSON.stringify(this.photo)));
+                // Ask for the form to be opened.
+                this.fire("iron-signal", { name: "open-form",
+                    data: {
+                        name: "edit_photo_form",
+                        photo: this.item_to_edit,
+                        callback: "resolve_edit_photo",
+                        that: this,
+                    },
+                });
+            },
+            // Handle response from dialog. Reason is either confirmed or
+            // canceled.
+            resolve_edit_photo: function(e, reason) {
+                if(!reason.confirmed) return;
+                console.log(this.photo);
+                // Override dirty checking; let Polymer know it changed.
+                var tmp = this.item_to_edit;
+                this.set("item_to_edit", {});
+                this.set("item_to_edit", tmp);
+                this.$.put_ajax.generateRequest();
+            },
+            // Copy response from PUT to update the display. The rationale for
+            // not loading the PUT response directly into photo is to prevent
+            // a failed return status from clearing the display.
+            put_item_successful: function() {
+                this.set("photo", this.item_to_edit);
+                console.log("updated");
+            },
+            put_item_failed: function() {
+                console.log("failed to update")
+            }
+
+        })
+    </script>
+</dom-module>

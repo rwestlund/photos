@@ -40,6 +40,8 @@
 <link rel="import" href="photo-form.html">
 <link rel="import" href="tag-form.html">
 <link rel="import" href="cookie-display.html">
+<link rel="import" href="tag-collection.html">
+<link rel="import" href="tag-display.html">
 
 <dom-module id="photos-app">
   <template>
@@ -102,28 +104,36 @@
             <app-toolbar></app-toolbar>
             <paper-menu>
                 <a href="/"><paper-item>
-                        <iron-icon icon="image:photo-library"></iron-icon>
-                        Photos
+                        <iron-icon icon="image:landscape"></iron-icon>
+                        Recent
                     </paper-item>
                 </a>
+                <a href="/albums/"><paper-item>
+                        <iron-icon icon="image:photo-library"></iron-icon>
+                        Albums
+                    </paper-item>
+                </a>
+
                 <a href="/about/">
                     <paper-item>
                         <iron-icon icon="icons:info"></iron-icon>
                         About
                     </paper-item>
                 </a>
-                <a href="/users/">
-                    <paper-item>
-                        <iron-icon icon="icons:face"></iron-icon>
-                        Users
-                    </paper-item>
-                </a>
-                <a href="/uploads/">
-                    <paper-item>
-                        <iron-icon icon="icons:file-upload"></iron-icon>
-                        Uploads
-                    </paper-item>
-                </a>
+                <template is="dom-if" if="[[user_name]]">
+                    <a href="/users/">
+                        <paper-item>
+                            <iron-icon icon="icons:face"></iron-icon>
+                            Users
+                        </paper-item>
+                    </a>
+                    <a href="/uploads/">
+                        <paper-item>
+                            <iron-icon icon="icons:file-upload"></iron-icon>
+                            Uploads
+                        </paper-item>
+                    </a>
+                </template>
             </paper-menu>
             <hr>
             <template is="dom-if" if="[[user_name]]">
@@ -172,13 +182,27 @@
                 </app-toolbar>
             </app-header>
 
+            <!-- Ignore /api/ and /auth/ routes; let the browser have them. This
+                 is also defined in sw-precache-config.js. -->
             <app-location route="{{route}}" url-space-regex="^/(?!(api|auth)/)">
             </app-location>
+            <!-- The top-level router. -->
             <app-route
                 route="{{route}}"
                 pattern="/:page"
                 data="{{route_data}}"
                 tail="{{tail}}">
+            </app-route>
+
+            <!-- If every page used the same subrouter, they'd all be bound
+             to the same id (i.e. loading albums/test would also try to
+             load otherurl/test). Instead, use a separate router for each path
+             so that a non-active path will not match the id from the
+             current path. There may be a better way to do this. -->
+            <app-route
+                 route="{{route}}"
+                 pattern="/albums/:tag"
+                 data="{{albums_route_data}}">
             </app-route>
 
             <iron-pages selected="[[route_data.page]]"
@@ -189,6 +213,18 @@
                     <h2>photos!</h2>
                     <photo-collection>
                     </photo-collection>
+                </section>
+
+                <section name="albums">
+                    <template is="dom-if" if="[[albums_route_data.tag]]">
+                        <photo-collection tag="[[albums_route_data.tag]]">
+                        </photo-collection>
+                    </template>
+
+                    <template is="dom-if" if="[[!albums_route_data.tag]]">
+                        <h2>albums!</h2>
+                        <tag-collection></tag-collection>
+                    </template>
                 </section>
 
                 <section name="about">

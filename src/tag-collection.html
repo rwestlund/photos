@@ -1,3 +1,4 @@
+
 <!--
     Copyright (c) 2016. Randy Westlund and Jacqueline Kory Westlund.
     All rights reserved.
@@ -6,7 +7,7 @@
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
-<dom-module id="photo-collection">
+<dom-module id="tag-collection">
     <template>
         <style is="custom-style" include="app-grid-style"></style>
         <style>
@@ -25,15 +26,14 @@
         <iron-ajax
             auto
             method="GET"
-            url="/api/photos"
-            params="[[search_filter]]"
+            url="/api/tags"
             handle-as="json"
-            last-response="{{photos}}">
+            last-response="{{tags}}">
         </iron-ajax>
 
         <div class="app-grid">
-            <template is="dom-repeat" items="[[photos]]">
-                <photo-display photo="[[item]]"></photo-display>
+            <template is="dom-repeat" items="[[tags]]">
+                <tag-display tag="[[item]]"></tag-display>
             </template>
         </div>
     </template>
@@ -41,21 +41,7 @@
     <script>
         'use strict';
         Polymer({
-            is: "photo-collection",
-            properties: {
-                tag: {
-                    type: String,
-                },
-                search_filter: {
-                    type: Object,
-                    computed: "compute_search_filter(tag)",
-                }
-            },
-            compute_search_filter: function(tag) {
-                var o = {};
-                if (tag) o.tag = tag;
-                return o;
-            },
+            is: "tag-collection",
             // Reevaluated the app-grid styles on resize.
             attached: function() {
                 window.addEventListener("resize", () => this.updateStyles());
