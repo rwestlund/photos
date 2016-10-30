@@ -500,6 +500,31 @@ func handle_get_tags(res http.ResponseWriter, req *http.Request) {
 	res.Write(j)
 }
 
+func handle_get_tag(res http.ResponseWriter, req *http.Request) {
+	var tag *defs.Tag
+	var err error
+	/* Get name parameter. */
+	var params map[string]string = mux.Vars(req)
+	tag, err = db.FetchTag(params["tag_name"])
+	if err == sql.ErrNoRows {
+		res.WriteHeader(404)
+		return
+	}
+	if err != nil {
+		log.Println(err)
+		res.WriteHeader(500)
+		return
+	}
+	j, e := json.Marshal(tag)
+	if e != nil {
+		log.Println(e)
+		res.WriteHeader(500)
+		return
+	}
+	/* If we made it here, send good response. */
+	res.Write(j)
+}
+
 func handle_put_or_post_tags(res http.ResponseWriter, req *http.Request) {
 	/* Access control. */
 	var usr *defs.User

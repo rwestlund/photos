@@ -120,4 +120,10 @@ var routes = Routes{
 		"/api/tags",
 		handle_put_or_post_tags,
 	},
+	Route{
+		"tags",
+		[]string{"GET"},
+		"/api/tags/{tag_name:[A-z][^/]*}",
+		handle_get_tag,
+	},
 }
