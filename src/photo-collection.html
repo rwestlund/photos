@@ -31,6 +31,10 @@
             last-response="{{photos}}">
         </iron-ajax>
 
+        <template is="dom-if" if="[[!photos.length]]">
+            <h4>This album has no photos!</h4>
+        </template>
+
         <div class="app-grid">
             <template is="dom-repeat" items="[[photos]]">
                 <photo-display photo="[[item]]"></photo-display>

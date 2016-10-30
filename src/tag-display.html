@@ -8,7 +8,7 @@
 
 <dom-module id="tag-display">
     <template>
-        <style>
+        <style is="custom-style" include="iron-flex iron-flex-alignment">
             :host {
                 --iron-image-placeholder: {
                     background: #dddddd;
@@ -21,6 +21,17 @@
             a.plain {
                 color: inherit;
                 text-decoration: none;
+            }
+            span.tag_name {
+                font-weight: bold;
+                font-size: large;
+            }
+            span.tag_image_count {
+                color: gray;
+                font-style: italic;
+            }
+            paper-material.card-item {
+                padding: 10px;
             }
         </style>
 
@@ -45,16 +56,18 @@
         </iron-ajax>
 
         <a href$="/albums/[[tag.name]]" class="plain">
-            <paper-material>
-                <paper-icon-button icon="icons:create" on-tap="edit_photo">
-                </paper-icon-button>
-                <paper-spinner active="[[loading]]"></paper-spinner>
+            <paper-material class="card-item">
                 <template is="dom-if" if="[[photo.id]]">
                     <iron-image src="/api/photos/[[photo.id]]/image"
                         preload fade>
                     </iron-image>
                 </template>
-                <h3>[[tag.name]]</h3>
+                <div class="layout horizontal justified">
+                    <span class="tag_name">[[tag.name]]</span>
+                    <span class="tag_image_count">
+                        [[pretty_image_count(tag.image_count)]]
+                    </span>
+                </div>
             </paper-material>
         </a>
     </template>
@@ -108,8 +121,8 @@
             },
             put_item_failed: function() {
                 console.log("failed to update")
-            }
-
+            },
+            pretty_image_count: c => c + (c === 1 ? " photo" : " photos"),
         })
     </script>
 </dom-module>
