@@ -9,6 +9,9 @@
 <dom-module id="tag-display">
     <template>
         <style is="custom-style" include="iron-flex iron-flex-alignment">
+        </style>
+        <style is="custom-style" include="global-styles"></style>
+        <style>
             :host {
                 --iron-image-placeholder: {
                     background: #dddddd;
@@ -18,10 +21,6 @@
                 --iron-image-width: 100%;
                 margin: 0px 5px;
             }
-            a.plain {
-                color: inherit;
-                text-decoration: none;
-            }
             span.tag_name {
                 font-weight: bold;
                 font-size: large;
@@ -29,9 +28,6 @@
             span.tag_image_count {
                 color: gray;
                 font-style: italic;
-            }
-            paper-material.card-item {
-                padding: 10px;
             }
         </style>
 
@@ -76,6 +72,7 @@
         'use strict';
         Polymer({
             is: "tag-display",
+            behaviors: [photo_behaviors.global_behavior],
             properties: {
                 tag: {
                     type: String,
@@ -122,7 +119,6 @@
             put_item_failed: function() {
                 console.log("failed to update")
             },
-            pretty_image_count: c => c + (c === 1 ? " photo" : " photos"),
         })
     </script>
 </dom-module>

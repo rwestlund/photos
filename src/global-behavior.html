@@ -1,0 +1,13 @@
+<!--
+    Copyright (c) 2016. Randy Westlund. All rights reserved.
+    This code is under the BSD-2-Clause license.
+-->
+
+<script>
+'use strict';
+var photo_behaviors = photo_behaviors || {};
+/** @polymerBehavior photo_behaviors.global_behavior */
+photo_behaviors.global_behavior = {
+        pretty_image_count: c => c + (c === 1 ? " photo" : " photos"),
+   };
+</script>

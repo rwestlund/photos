@@ -9,6 +9,9 @@
 <dom-module id="photo-collection">
     <template>
         <style is="custom-style" include="app-grid-style"></style>
+        <style is="custom-style" include="iron-flex iron-flex-alignment">
+        </style>
+        <style is="custom-style" include="global-styles"></style>
         <style>
             :host {
                 display: block;
@@ -20,6 +23,12 @@
                     --app-grid-columns: 1;
                 }
             }
+            span.tag_image_count {
+                color: gray;
+                font-size: large;
+                font-style: italic;
+            }
+
         </style>
 
         <iron-ajax
@@ -30,6 +39,24 @@
             handle-as="json"
             last-response="{{photos}}">
         </iron-ajax>
+
+
+        <template is="dom-if" if="[[tagName]]">
+             <iron-ajax
+                auto
+                method="GET"
+                url="/api/tags/[[tagName]]"
+                handle-as="json"
+                last-response="{{tag}}">
+            </iron-ajax>
+
+            <div class="layout horizontal justified">
+                <span class="page_name">[[tagName]]</span>
+                <span class="tag_image_count">
+                    [[pretty_image_count(tag.image_count)]]
+                </span>
+            </div>
+        </template>
 
         <template is="dom-if" if="[[!photos.length]]">
             <h4>This album has no photos!</h4>
@@ -46,18 +73,19 @@
         'use strict';
         Polymer({
             is: "photo-collection",
+            behaviors: [photo_behaviors.global_behavior],
             properties: {
-                tag: {
+                tagName: {
                     type: String,
                 },
                 search_filter: {
                     type: Object,
-                    computed: "compute_search_filter(tag)",
+                    computed: "compute_search_filter(tagName)",
                 }
             },
             compute_search_filter: function(tag) {
                 var o = {};
-                if (tag) o.tag = tag;
+                if (tag) o.tag= tag;
                 return o;
             },
             // Reevaluated the app-grid styles on resize.

@@ -31,8 +31,10 @@
 <!-- Third party components. -->
 <link rel="import" href="../bower_components/polymer-responsive-dialog/responsive-dialog.html">
 
-<!-- Behaviors must come before elements that use them. -->
+<!-- Behaviors and styles must come before elements that use them. -->
 <link rel="import" href="form-behavior.html">
+<link rel="import" href="global-behavior.html">
+<link rel="import" href="global-styles.html">
 
 <!-- Custom elements. -->
 <link rel="import" href="photos-uploads.html">
@@ -47,6 +49,7 @@
 
 <dom-module id="photos-app">
   <template>
+    <style is="custom-style" include="global-styles"></style>
     <style>
         :host {
             display: block;
@@ -64,11 +67,17 @@
                 background-color: #f2e4d2;
             }
         }
+        div[main-title]{
+            font-size: x-large;
+            font-weight: bold;
+        }
 
         app-toolbar {
             background-color: #1E88E5;
         }
-
+        iron-pages {
+            margin: 15px;
+        }
         paper-menu iron-icon {
             margin-right: 1em;
         }
@@ -80,6 +89,7 @@
 
         span.username {
             padding-left: 5px;
+            font-size: large;
         }
     </style>
 
@@ -212,29 +222,29 @@
                 fallback-selection="404">
 
                 <section name="">
-                    <h2>photos!</h2>
+                    <span class="page_name">Recent Photos</span>
                     <photo-collection>
                     </photo-collection>
                 </section>
 
                 <section name="albums">
                     <template is="dom-if" if="[[albums_route_data.tag]]">
-                        <photo-collection tag="[[albums_route_data.tag]]">
+                        <photo-collection tag-name="[[albums_route_data.tag]]">
                         </photo-collection>
                     </template>
 
                     <template is="dom-if" if="[[!albums_route_data.tag]]">
-                        <h2>albums!</h2>
+                        <span class="page_name">Albums</span>
                         <tag-collection></tag-collection>
                     </template>
                 </section>
 
                 <section name="about">
-                    <h2>about!</h2>
+                    <span class="page_name">About</span>
                 </section>
 
                 <section name="users">
-                    <h2>users!</h2>
+                    <span class="page_name">Users</span>
                 </section>
 
                 <section name="uploads">
@@ -242,7 +252,7 @@
                 </section>
 
                 <section name="404">
-                    <h2>404!</h2>
+                    <span class="page_name">404!</span>
                 </section>
 
             </iron-pages>

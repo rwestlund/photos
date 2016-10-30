@@ -8,6 +8,7 @@
 
 <dom-module id="photo-display">
     <template>
+        <style is="custom-style" include="global-styles"></style>
         <style>
             :host {
                 --iron-image-placeholder: {
@@ -17,6 +18,10 @@
             iron-image {
                 --iron-image-width: 100%;
                 margin: 0px 5px;
+            }
+            p.tag_list {
+                color: gray;
+                font-style: italic;
             }
         </style>
 
@@ -32,14 +37,18 @@
                 loading="{{loading}}">
         </iron-ajax>
 
-        <paper-material>
+        <paper-material class="card-item">
             <paper-icon-button icon="icons:create" on-tap="edit_photo">
             </paper-icon-button>
             <paper-spinner active="[[loading]]"></paper-spinner>
             <iron-image src="/api/photos/[[photo.id]]/image" preload fade>
             </iron-image>
-            <p>[[photo.filename]]</p>
             <p>[[photo.caption]]</p>
+            <p class="tag_list">
+                <template is="dom-repeat" items="[[photo.tags]]">
+                    [[item]]
+                </template>
+            </p>
         </paper-material>
     </template>
 
