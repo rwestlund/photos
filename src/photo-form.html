@@ -8,6 +8,28 @@
 
 <dom-module id="photo-form">
     <template>
+        <style is="custom-style" include="iron-flex iron-flex-alignment">
+
+            .photo-item-label {
+                padding-top: 1.2em;
+                display: block;
+            }
+
+            .tag-item {
+                margin-right: 1em;
+                padding-right: 1em;
+            }
+
+        </style>
+
+        <iron-ajax
+            auto
+            method="GET"
+            url="/api/tags"
+            handle-as="json"
+            last-response="{{tags}}">
+        </iron-ajax>
+
         <responsive-dialog id="dialog"
                 title="Edit photo"
                 dismiss-text="Cancel"
@@ -20,6 +42,38 @@
                     autocapitalize="sentences"
                     char-counter maxlength="140">
             </paper-input>
+
+            <strong class="photo-item-label">Tags</strong>
+                <div class="layout horizontal wrap">
+                    <template is="dom-repeat" items="[[photo.tags]]">
+                        <paper-material class="tag-item">
+                            <paper-icon-button
+                                    icon="icons:cancel"
+                                    data-index$="[[index]]"
+                                    on-tap="remove_tag">
+                            </paper-icon-button>
+                            <span>[[item]]</span>
+                        </paper-material>
+                    </template>
+                </div>
+
+            <div class="layout vertical">
+                <paper-dropdown-menu
+                        label="Select Tags"
+                        vertical-align="top"
+                        horizontal-align="right">
+                    <paper-menu class="dropdown-content"
+                                attr-for-selected="value"
+                                selected="{{selected_tag}}"
+                                on-iron-select="add_selected_tag">
+                        <template is="dom-repeat" items="[[tags]]">
+                            <paper-item value="[[item.name]]">
+                                [[item.name]]
+                            </paper-item>
+                        </template>
+                    </paper-menu>
+                </paper-dropdown-menu>
+            </div>
         </responsive-dialog>
     </template>
 
@@ -32,6 +86,17 @@
                 photo: {
                     type: Object,
                 },
+            },
+            // Add a tag to the tag list, checking for duplicates first.
+            add_selected_tag: function() {
+                for (var i in this.photo.tags)
+                    if (this.photo.tags[i] === this.selected_tag) return;
+                this.push('photo.tags', this.selected_tag);
+            },
+            remove_tag: function(e) {
+                var index = Number(
+                        e.currentTarget.attributes['data-index'].value);
+                this.splice('photo.tags', index, 1);
             },
         })
     </script>
