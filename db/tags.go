@@ -22,7 +22,7 @@ func scan_tag(rows *sql.Rows) (*defs.Tag, error) {
 	 * CoverImageId is not valid.
 	 */
 	var coverimg sql.NullInt64
-	var err error = rows.Scan(&t.Name, &coverimg)
+	var err error = rows.Scan(&t.Name, &coverimg, &t.ImageCount)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,13 @@ func scan_tag(rows *sql.Rows) (*defs.Tag, error) {
 func FetchTags() (*[]defs.Tag, error) {
 	var rows *sql.Rows
 	var err error
-	rows, err = DB.Query("SELECT name, cover_image_id FROM tags ORDER BY name")
+	rows, err = DB.Query(`
+		SELECT tags.name, tags.cover_image_id,
+			COUNT(tagged_photos.tag_name) AS image_count
+		FROM tags
+		LEFT JOIN tagged_photos ON tagged_photos.tag_name = tags.name
+		GROUP BY tags.name
+		ORDER BY tags.name`)
 	if err != nil {
 		return nil, err
 	}
@@ -64,13 +70,44 @@ func FetchTags() (*[]defs.Tag, error) {
 	return &tags, nil
 }
 
+/* Get one tag from the database. */
+func FetchTag(tag_name string) (*defs.Tag, error) {
+	var rows *sql.Rows
+	var err error
+	rows, err = DB.Query(`
+		SELECT tags.name, tags.cover_image_id,
+			COUNT(tagged_photos.tag_name) AS image_count
+		FROM tags
+		LEFT JOIN tagged_photos ON tagged_photos.tag_name = tags.name
+		WHERE tags.name = $1
+		GROUP BY tags.name
+		ORDER BY tags.name`, tag_name)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	/* Make sure we have a row returned. */
+	if !rows.Next() {
+		return nil, sql.ErrNoRows
+	}
+
+	var tag *defs.Tag
+	tag, err = scan_tag(rows)
+	if err != nil {
+		return nil, err
+	}
+
+	return tag, nil
+}
+
 /* Create a new tag in the database. */
 func CreateTag(tag *defs.Tag) (*defs.Tag, error) {
 	var rows *sql.Rows
 	var err error
 	//TODO some input validation would be nice
 	rows, err = DB.Query(`INSERT INTO tags (name) VALUES ($1)
-                RETURNING name, cover_image_id`, tag.Name)
+                RETURNING name, cover_image_id, 0 AS image_count`, tag.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -104,10 +141,9 @@ func UpdateTag(name string, tag *defs.Tag) (*defs.Tag, error) {
 	if !rows.Next() {
 		return nil, sql.ErrNoRows
 	}
-	/* Scan it in. */
-	tag, err = scan_tag(rows)
-	if err != nil {
-		return nil, err
-	}
-	return tag, nil
+
+	/* At this point, we just need to read back the tag. */
+	/* TODO replace this with RETURNING */
+	tag, err = FetchTag(name)
+	return tag, err
 }
