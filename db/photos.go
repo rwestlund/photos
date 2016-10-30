@@ -89,6 +89,8 @@ func FetchPhotos(filter *defs.ItemFilter) (*[]defs.Photo, error) {
 		} else {
 			query_text += "\n\tAND"
 		}
+		query_text = "\n\t LEFT JOIN tagged_photos " +
+			"ON tagged_photos.photo_id = photos.id " + query_text
 		params = append(params, filter.Tag)
 		query_text += " tagged_photos.tag_name = $" +
 			strconv.Itoa(len(params))
@@ -109,10 +111,7 @@ func FetchPhotos(filter *defs.ItemFilter) (*[]defs.Photo, error) {
 	/* Run the actual query. */
 	var rows *sql.Rows
 	var err error
-	rows, err = DB.Query(query_rows+
-		/* TODO is this join necessary? */
-		"\n\t LEFT JOIN tagged_photos ON tagged_photos.photo_id = photos.id "+
-		query_text, params...)
+	rows, err = DB.Query(query_rows+query_text, params...)
 	if err != nil {
 		return nil, err
 	}
