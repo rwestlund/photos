@@ -73,7 +73,7 @@ func FetchPhotos(filter *defs.ItemFilter) (*[]defs.Photo, error) {
 		}
 
 		if i == 0 {
-			query_text += "\n\t WHERE (caption ILIKE $"
+			query_text += "\n\tWHERE (caption ILIKE $"
 		} else {
 			query_text += " AND (caption ILIKE $"
 		}
@@ -81,6 +81,17 @@ func FetchPhotos(filter *defs.ItemFilter) (*[]defs.Photo, error) {
 		query_text += strconv.Itoa(len(params)) +
 			"\n\t\t OR string_agg(tagged_photos.name, ' ') ILIKE $" +
 			strconv.Itoa(len(params)) + ") "
+	}
+
+	if filter.Tag != "" {
+		if query_text == "" {
+			query_text += "\n\tWHERE"
+		} else {
+			query_text += "\n\tAND"
+		}
+		params = append(params, filter.Tag)
+		query_text += " tagged_photos.tag_name = $" +
+			strconv.Itoa(len(params))
 	}
 
 	query_text += "\n\t ORDER BY creation_date DESC"

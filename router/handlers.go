@@ -35,6 +35,7 @@ func build_item_filter(url *url.URL) *defs.ItemFilter {
 		Query: url.Query().Get("query"),
 		Count: uint32(bigcount),
 		Skip:  uint32(bigskip),
+		Tag:   url.Query().Get("tag"),
 	}
 	return &filter
 }
