@@ -111,35 +111,38 @@
     <iron-media-query query="(max-width: 500px)" query-matches="{{mobile}}">
     </iron-media-query>
 
-    <app-drawer-layout fullbleed responsive-width="900px">
+    <!-- App drawer -->
+    <app-drawer-layout id="drawer_layout" fullbleed responsive-width="900px">
         <app-drawer id="drawer" swipe-open>
             <app-toolbar></app-toolbar>
-            <paper-menu>
-                <a href="/"><paper-item>
+            <paper-menu selected="[[route_data.page]]"
+                    attr-for-selected="name"
+                    on-tap="toggle_drawer">
+                <a name="" href="/"><paper-item>
                         <iron-icon icon="image:landscape"></iron-icon>
                         Recent
                     </paper-item>
                 </a>
-                <a href="/albums/"><paper-item>
+                <a name="albums" href="/albums/"><paper-item>
                         <iron-icon icon="image:photo-library"></iron-icon>
                         Albums
                     </paper-item>
                 </a>
 
-                <a href="/about/">
+                <a name="about" href="/about/">
                     <paper-item>
                         <iron-icon icon="icons:info"></iron-icon>
                         About
                     </paper-item>
                 </a>
                 <template is="dom-if" if="[[user_name]]">
-                    <a href="/users/">
+                    <a name="users" href="/users/">
                         <paper-item>
                             <iron-icon icon="icons:face"></iron-icon>
                             Users
                         </paper-item>
                     </a>
-                    <a href="/uploads/">
+                    <a name="uploads" href="/uploads/">
                         <paper-item>
                             <iron-icon icon="icons:file-upload"></iron-icon>
                             Uploads
@@ -179,6 +182,7 @@
 
         </app-drawer>
 
+        <!-- App header -->
         <app-header-layout fullbleed>
             <app-header fixed>
                 <app-toolbar>
@@ -217,6 +221,7 @@
                  data="{{albums_route_data}}">
             </app-route>
 
+            <!-- App pages -->
             <iron-pages selected="[[route_data.page]]"
                 attr-for-selected="name"
                 fallback-selection="404">
@@ -266,14 +271,8 @@
   <script>
     'use strict';
     Polymer({
-
       is: 'photos-app',
-
       properties: {
-        prop1: {
-          type: String,
-          value: 'photos-app--------------------!',
-        },
       },
 
       ready: function() {
@@ -281,7 +280,7 @@
       },
 
       toggle_drawer: function() {
-          this.$.drawer.toggle();
+          if (this.$.drawer_layout.narrow) this.$.drawer.toggle();
       },
 
       // Opens the create tag modal.
