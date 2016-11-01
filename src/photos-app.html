@@ -53,27 +53,43 @@
     <style>
         :host {
             display: block;
-            --app-primary-color: #433262;
-            --app-secondary-color: #f5d322;
-            --app-accent-color: #171717;
-
-            /* app-drawer */
-            --app-drawer-width: 10em;
+            /* Primary background color is also defined in index.html */
+            --primary-background-color: #f7f0ed;
+            --medium-background-color: #f2dfd9;
+            --dark-background-color: #d18e7a;
+            --header-background-color: #610505;
+            --light-header-text-color: #fbf2ea;
+            --dark-header-text-color: #2a1a09;
 
             /* paper-menu */
-            --paper-menu-background-color: #f2e4d2;
+            --paper-menu-background-color: var(--medium-background-color);
 
+            /* These apply to the application menu drawer. */
             --app-drawer-content-container: {
-                background-color: #f2e4d2;
+                /* There is no border by default. */
+                border-right: 1px solid var(--dark-background-color);
+                background-color: var(--medium-background-color);
             }
+
+            /* Make the drawer a little smaller than default. */
+            --app-drawer-width: 10em;
         }
-        div[main-title]{
+        /* This applies to the main application title. */
+        div[main-title] {
             font-size: x-large;
             font-weight: bold;
+            color: var(--light-header-text-color);
+            text-shadow: 1px 1px var(--dark-header-text-color),
+                0 0 5px var(--dark-header-text-color);
         }
-
+        /* This applies to the application header/toolbar. */
         app-toolbar {
-            background-color: #1E88E5;
+            background-color: var(--header-background-color);
+            background-image: url("images/header_leaves.jpg");
+            background-size: cover;
+        }
+        hr {
+            border-color: var(--dark-background-color);
         }
         iron-pages {
             margin: 15px;
@@ -81,15 +97,33 @@
         paper-menu iron-icon {
             margin-right: 1em;
         }
-
         paper-menu a {
             text-decoration: none;
             color: #111111;
+        }
+        /* Gray out the nav icons to match the text. */
+        paper-menu iron-icon {
+            --iron-icon-fill-color: #111111;
+        }
+        /* For selected menu items in the drawer. */
+        paper-menu .iron-selected paper-item {
+            background-color: var(--dark-background-color);
+            font-weight: bold;
         }
 
         span.username {
             padding-left: 5px;
             font-size: large;
+            color: var(--light-header-text-color);
+            text-shadow: 1px 1px var(--dark-header-text-color),
+                0 0 5px var(--dark-header-text-color);
+        }
+        iron-icon.header {
+            --iron-icon-fill-color: var(--light-header-text-color);
+        }
+        paper-icon-button.header {
+            --paper-icon-button-ink-color: var(--light-header-text-color);
+            color: var(--light-header-text-color);
         }
     </style>
 
@@ -150,8 +184,8 @@
                     </a>
                 </template>
             </paper-menu>
-            <hr>
             <template is="dom-if" if="[[user_name]]">
+                <hr>
                 <paper-button raised on-tap="create_tag">
                     <iron-icon icon="icons:add"></iron-icon>
                     Create tag
@@ -186,12 +220,13 @@
         <app-header-layout fullbleed>
             <app-header fixed>
                 <app-toolbar>
-                    <paper-icon-button icon="menu" drawer-toggle>
+                    <paper-icon-button class="header" icon="menu" drawer-toggle>
                     </paper-icon-button>
                     <div main-title>Photos</div>
                     <template is="dom-if" if="[[!mobile]]">
                         <template is="dom-if" if="[[user_name]]">
-                            <iron-icon icon="icons:account-circle"></iron-icon>
+                            <iron-icon class="header" icon="icons:account-circle">
+                            </iron-icon>
                             <span class="username">Hi, [[user_name]]!</span>
                         </template>
                     </template>
