@@ -22,6 +22,7 @@
             p.tag_list {
                 color: gray;
                 font-style: italic;
+                word-spacing: 2px;
             }
         </style>
 
@@ -46,7 +47,7 @@
             <p>[[photo.caption]]</p>
             <p class="tag_list">
                 <template is="dom-repeat" items="[[photo.tags]]">
-                    [[item]]
+                    <a href="/albums/[[item]]" class="plain">[[item]]</a>
                 </template>
             </p>
         </paper-material>
