@@ -9,5 +9,9 @@ var photo_behaviors = photo_behaviors || {};
 /** @polymerBehavior photo_behaviors.global_behavior */
 photo_behaviors.global_behavior = {
         pretty_image_count: c => c + (c === 1 ? " photo" : " photos"),
+
+        user_is_admin: function(role) {
+            return (role === 'Admin');
+        },
    };
 </script>

@@ -141,6 +141,8 @@
 
     <cookie-display cookie-name="username" cookie-value="{{user_name}}">
     </cookie-display>
+    <cookie-display cookie-name="role" cookie-value="{{user_role}}">
+    </cookie-display>
 
     <iron-media-query query="(max-width: 500px)" query-matches="{{mobile}}">
     </iron-media-query>
@@ -169,7 +171,7 @@
                         About
                     </paper-item>
                 </a>
-                <template is="dom-if" if="[[user_name]]">
+                <template is="dom-if" if="[[user_is_admin(user_role)]]">
                     <a name="users" href="/users/">
                         <paper-item>
                             <iron-icon icon="icons:face"></iron-icon>
@@ -184,7 +186,7 @@
                     </a>
                 </template>
             </paper-menu>
-            <template is="dom-if" if="[[user_name]]">
+            <template is="dom-if" if="[[user_is_admin(user_role)]]">
                 <hr>
                 <paper-button raised on-tap="create_tag">
                     <iron-icon icon="icons:add"></iron-icon>
@@ -291,6 +293,16 @@
                     <photos-uploads></photos-uploads>
                 </section>
 
+                <template is="dom-if" if="[[user_is_admin(user_role)]]">
+                    <section name="users">
+                        <span class="page_name">Users</span>
+                    </section>
+
+                    <section name="uploads">
+                        <photos-uploads></photos-uploads>
+                    </section>
+                </template>
+
                 <section name="404">
                     <span class="page_name">404!</span>
                 </section>
@@ -307,6 +319,7 @@
     'use strict';
     Polymer({
       is: 'photos-app',
+      behaviors: [photo_behaviors.global_behavior],
       properties: {
       },
 
