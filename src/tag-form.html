@@ -9,7 +9,7 @@
 <dom-module id="tag-form">
     <template>
         <responsive-dialog id="dialog"
-                title="Create tag"
+                title="[[title]]"
                 dismiss-text="Cancel"
                 confirm-text="Save"
                 on-iron-overlay-closed="resolve_dialog">
@@ -31,6 +31,10 @@
             properties: {
                 tag: {
                     type: Object,
+                },
+                title: {
+                    type: String,
+                    value: "Create album",
                 },
             },
         })

@@ -40,9 +40,8 @@
             last-response="{{photos}}">
         </iron-ajax>
 
-
-        <template is="dom-if" if="[[tagName]]">
-             <iron-ajax
+         <template is="dom-if" if="[[tagName]]">
+            <iron-ajax
                 auto="[[tagName]]"
                 method="GET"
                 url="/api/tags/[[tagName]]"
@@ -50,8 +49,22 @@
                 last-response="{{tag}}">
             </iron-ajax>
 
+            <iron-ajax id="put_ajax"
+                    method="PUT"
+                    url="/api/tags/[[tagName]]"
+                    body="[[item_to_edit]]"
+                    content-type="application/json"
+                    handle-as="json"
+                    last-response="{{item_to_edit}}"
+                    on-response="put_item_successful"
+                    on-error="put_item_failed"
+                    loading="{{loading}}">
+             </iron-ajax>
+
             <div class="layout horizontal justified">
                 <span class="page_name">[[tagName]]</span>
+                <paper-icon-button icon="icons:create" on-tap="edit_album">
+                </paper-icon-button>
                 <span class="tag_image_count">
                     [[pretty_image_count(tag.image_count)]]
                 </span>
@@ -92,6 +105,36 @@
             attached: function() {
                 window.addEventListener("resize", () => this.updateStyles());
             },
+            edit_album: function() {
+                this.set('item_to_edit', JSON.parse(JSON.stringify(this.tag)));
+                // Ask for the form to be opened.
+                this.fire("iron-signal", { name: "open-form",
+                    data: {
+                        name: "edit_tag_form",
+                        tag: this.item_to_edit,
+                        callback: "resolve_edit_tag",
+                        that: this,
+                    },
+                });
+            },
+            resolve_edit_tag: function (e, reason) {
+                if(!reason.confirmed) return;
+                // Override dirty checking; let Polymer know it changed.
+                var tmp = this.item_to_edit;
+                this.set("item_to_edit", {});
+                this.set("item_to_edit", tmp);
+                this.$$("#put_ajax").generateRequest();
+            },
+            put_item_successful: function() {
+                console.log("updated");
+                window.history.pushState({}, null, "/albums/" +
+                        this.item_to_edit.name);
+                window.dispatchEvent(new CustomEvent("location-changed"));
+            },
+            put_item_failed: function() {
+                console.log("failed to update")
+            }
+
         })
     </script>
 </dom-module>
