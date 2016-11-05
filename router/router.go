@@ -9,6 +9,7 @@ package router
 
 import (
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 )
 
@@ -26,7 +27,29 @@ func NewRouter() *mux.Router {
 			Name(route.name).
 			Handler(handler)
 	}
+
+	/*
+	 * If any client routes fall through to the server, such as during page
+	 * refresh, send the application back.
+	 */
+	router.
+		Methods("GET", "HEAD").
+		PathPrefix("/{path:(albums|about|users|uploads)}/").
+		Name("path").
+		Handler(Logger(ServeIndex, "path"))
+
 	/* Add route to handle static files. */
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./build/unbundled")))
+
 	return router
 }
+
+/*
+ * Manually reply with the index / homepage. This is used to support
+ * client-side refresh without a hash in the URL.
+ */
+var ServeIndex http.HandlerFunc = http.HandlerFunc(func(res http.ResponseWriter,
+	req *http.Request) {
+	log.Println("serving index!")
+	http.ServeFile(res, req, "./build/unbundled/index.html")
+})
