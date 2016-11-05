@@ -46,7 +46,10 @@
             <template is="dom-if" if="[[user_is_admin(user_role)]]">
                 <paper-icon-button icon="icons:create" on-tap="edit_photo">
                 </paper-icon-button>
+                <paper-icon-button icon="image:photo-album"
+                        on-tap="set_album_image">
                 <paper-spinner active="[[loading]]"></paper-spinner>
+                </paper-icon-button>
             </template>
             <iron-image src="/api/photos/[[photo.id]]/image" preload fade>
             </iron-image>
@@ -69,6 +72,10 @@
                 photo: {
                     type: Object,
                     value: {}
+                },
+                album: {
+                    type: Boolean,
+                    value: false
                 },
             },
             // Opens the edit modal.
@@ -107,7 +114,10 @@
             },
             put_item_failed: function() {
                 console.log("failed to update")
-            }
+            },
+            set_album_image: function() {
+                this.fire("set-album-image", this.photo.id);
+            },
 
         })
     </script>

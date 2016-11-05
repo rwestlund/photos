@@ -85,8 +85,17 @@
         </template>
 
         <div class="app-grid">
-            <template is="dom-repeat" items="[[photos]]">
-                <photo-display photo="[[item]]"></photo-display>
+            <template is="dom-if" if="[[albumName]]">
+                <template is="dom-repeat" items="[[photos]]">
+                    <photo-display photo="[[item]]" album
+                            on-set-album-image="set_album_image">
+                    </photo-display>
+                </template>
+            </template>
+            <template is="dom-if" if="[[!albumName]]">
+                <template is="dom-repeat" items="[[photos]]">
+                    <photo-display photo="[[item]]"></photo-display>
+                </template>
             </template>
         </div>
     </template>
@@ -136,13 +145,21 @@
             },
             put_item_successful: function() {
                 console.log("updated");
-                window.history.pushState({}, null, "/albums/" +
-                        this.item_to_edit.name);
-                window.dispatchEvent(new CustomEvent("location-changed"));
+                if (this.albumName !== this.item_to_edit.name)
+                {
+                    window.history.pushState({}, null, "/albums/" +
+                            this.item_to_edit.name);
+                    window.dispatchEvent(new CustomEvent("location-changed"));
+                }
             },
             put_item_failed: function() {
                 console.log("failed to update")
-            }
+            },
+            set_album_image: function(e, photo_id) {
+                this.set('item_to_edit', JSON.parse(JSON.stringify(this.album)));
+                this.item_to_edit.cover_image_id = photo_id;
+                this.$$("#put_ajax").generateRequest();
+            },
 
         })
     </script>
