@@ -43,7 +43,7 @@
 
         <template is="dom-if" if="[[tagName]]">
              <iron-ajax
-                auto
+                auto="[[tagName]]"
                 method="GET"
                 url="/api/tags/[[tagName]]"
                 handle-as="json"
