@@ -67,7 +67,8 @@ func main() {
     )`, nil)
 	wrap_sql(db, `CREATE TABLE tagged_photos (
         photo_id	integer REFERENCES photos(id) ON DELETE CASCADE NOT NULL,
-        tag_name   	text REFERENCES tags(name) ON DELETE CASCADE NOT NULL,
+        tag_name   	text REFERENCES tags(name) ON DELETE CASCADE
+						ON UPDATE CASCADE NOT NULL,
         UNIQUE (photo_id, tag_name)
     )`, nil)
 

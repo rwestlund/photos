@@ -116,10 +116,17 @@ var routes = Routes{
 	},
 	Route{
 		"tags",
-		[]string{"POST", "PUT"},
+		[]string{"POST"},
 		"/api/tags",
-		handle_put_or_post_tags,
+		handle_post_tags,
 	},
+	Route{
+		"tags",
+		[]string{"PUT"},
+		"/api/tags/{name:[A-z][^/]*}",
+		handle_put_tags,
+	},
+
 	Route{
 		"tags",
 		[]string{"GET"},
