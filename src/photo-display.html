@@ -19,7 +19,7 @@
                 --iron-image-width: 100%;
                 margin: 0px 5px;
             }
-            p.tag_list {
+            p.album_list {
                 color: gray;
                 font-style: italic;
                 word-spacing: 2px;
@@ -50,9 +50,9 @@
             <iron-image src="/api/photos/[[photo.id]]/image" preload fade>
             </iron-image>
             <p>[[photo.caption]]</p>
-            <p class="tag_list">
-                Tags:
-                <template is="dom-repeat" items="[[photo.tags]]">
+            <p class="album_list">
+                Albums:
+                <template is="dom-repeat" items="[[photo.albums]]">
                     <a href="/albums/[[item]]" class="plain">[[item]]</a>
                 </template>
             </p>

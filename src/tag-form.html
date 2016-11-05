@@ -6,7 +6,7 @@
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
-<dom-module id="tag-form">
+<dom-module id="album-form">
     <template>
         <responsive-dialog id="dialog"
                 title="[[title]]"
@@ -15,8 +15,8 @@
                 on-iron-overlay-closed="resolve_dialog">
             <paper-input
                     type="text"
-                    label="Tag"
-                    value="{{tag.name}}"
+                    label="Album"
+                    value="{{album.name}}"
                     autocapitalize="words"
                     char-counter maxlength="20">
             </paper-input>
@@ -26,10 +26,10 @@
     <script>
         'use strict';
         Polymer({
-            is: "tag-form",
+            is: "album-form",
             behaviors: [ photo_behaviors.form_behavior ],
             properties: {
-                tag: {
+                album: {
                     type: Object,
                 },
                 title: {

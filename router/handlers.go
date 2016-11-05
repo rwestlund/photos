@@ -35,7 +35,7 @@ func build_item_filter(url *url.URL) *defs.ItemFilter {
 		Query: url.Query().Get("query"),
 		Count: uint32(bigcount),
 		Skip:  uint32(bigskip),
-		Tag:   url.Query().Get("tag"),
+		Album:   url.Query().Get("album"),
 	}
 	return &filter
 }
@@ -481,16 +481,16 @@ func handle_delete_user(res http.ResponseWriter, req *http.Request) {
 	res.WriteHeader(200)
 }
 
-func handle_get_tags(res http.ResponseWriter, req *http.Request) {
-	var tags *[]defs.Tag
+func handle_get_albums(res http.ResponseWriter, req *http.Request) {
+	var albums *[]defs.Album
 	var err error
-	tags, err = db.FetchTags()
+	albums, err = db.FetchAlbums()
 	if err != nil {
 		log.Println(err)
 		res.WriteHeader(500)
 		return
 	}
-	j, e := json.Marshal(tags)
+	j, e := json.Marshal(albums)
 	if e != nil {
 		log.Println(e)
 		res.WriteHeader(500)
@@ -500,12 +500,12 @@ func handle_get_tags(res http.ResponseWriter, req *http.Request) {
 	res.Write(j)
 }
 
-func handle_get_tag(res http.ResponseWriter, req *http.Request) {
-	var tag *defs.Tag
+func handle_get_album(res http.ResponseWriter, req *http.Request) {
+	var album *defs.Album
 	var err error
 	/* Get name parameter. */
 	var params map[string]string = mux.Vars(req)
-	tag, err = db.FetchTag(params["tag_name"])
+	album, err = db.FetchAlbum(params["album_name"])
 	if err == sql.ErrNoRows {
 		res.WriteHeader(404)
 		return
@@ -515,7 +515,7 @@ func handle_get_tag(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(500)
 		return
 	}
-	j, e := json.Marshal(tag)
+	j, e := json.Marshal(album)
 	if e != nil {
 		log.Println(e)
 		res.WriteHeader(500)
@@ -525,7 +525,7 @@ func handle_get_tag(res http.ResponseWriter, req *http.Request) {
 	res.Write(j)
 }
 
-func handle_post_tags(res http.ResponseWriter, req *http.Request) {
+func handle_post_albums(res http.ResponseWriter, req *http.Request) {
 	/* Access control. */
 	var usr *defs.User
 	var err error
@@ -547,17 +547,17 @@ func handle_post_tags(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	/* Decode body. */
-	var tag defs.Tag
-	err = json.NewDecoder(req.Body).Decode(&tag)
+	var album defs.Album
+	err = json.NewDecoder(req.Body).Decode(&album)
 	if err != nil {
 		log.Println(err)
 		res.WriteHeader(400)
 		return
 	}
 
-	var new_tag *defs.Tag
-	/* Create new tag in DB. */
-	new_tag, err = db.CreateTag(&tag)
+	var new_album *defs.Album
+	/* Create new album in DB. */
+	new_album, err = db.CreateAlbum(&album)
 	if err != nil {
 		log.Println(err)
 		res.WriteHeader(400)
@@ -565,7 +565,7 @@ func handle_post_tags(res http.ResponseWriter, req *http.Request) {
 	}
 
 	/* Send it back. */
-	j, e := json.Marshal(new_tag)
+	j, e := json.Marshal(new_album)
 	if e != nil {
 		log.Println(e)
 		res.WriteHeader(500)
@@ -575,7 +575,7 @@ func handle_post_tags(res http.ResponseWriter, req *http.Request) {
 	res.Write(j)
 }
 
-func handle_put_tags(res http.ResponseWriter, req *http.Request) {
+func handle_put_albums(res http.ResponseWriter, req *http.Request) {
 	/* Access control. */
 	var usr *defs.User
 	var err error
@@ -597,19 +597,19 @@ func handle_put_tags(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	/* Decode body. */
-	var tag defs.Tag
-	err = json.NewDecoder(req.Body).Decode(&tag)
+	var album defs.Album
+	err = json.NewDecoder(req.Body).Decode(&album)
 	if err != nil {
 		log.Println(err)
 		res.WriteHeader(400)
 		return
 	}
 
-	var new_tag *defs.Tag
-	/* Update a tag in the database. */
+	var new_album *defs.Album
+	/* Update an album in the database. */
 	/* Get name parameter. */
 	var params map[string]string = mux.Vars(req)
-	new_tag, err = db.UpdateTag(params["name"], &tag)
+	new_album, err = db.UpdateAlbum(params["name"], &album)
 
 	if err != nil {
 		log.Println(err)
@@ -618,7 +618,7 @@ func handle_put_tags(res http.ResponseWriter, req *http.Request) {
 	}
 
 	/* Send it back. */
-	j, e := json.Marshal(new_tag)
+	j, e := json.Marshal(new_album)
 	if e != nil {
 		log.Println(e)
 		res.WriteHeader(500)

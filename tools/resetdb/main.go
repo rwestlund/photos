@@ -33,8 +33,8 @@ func main() {
 	}
 
 	log.Println("dropping old objects")
-	wrap_sql(db, "DROP TABLE IF EXISTS tagged_photos", nil)
-	wrap_sql(db, "DROP TABLE IF EXISTS tags", nil)
+	wrap_sql(db, "DROP TABLE IF EXISTS photo_albums", nil)
+	wrap_sql(db, "DROP TABLE IF EXISTS albums", nil)
 	wrap_sql(db, "DROP TABLE IF EXISTS photos", nil)
 	wrap_sql(db, "DROP TABLE IF EXISTS users", nil)
 
@@ -61,15 +61,15 @@ func main() {
 		caption			text NOT NULL DEFAULT '',
 		image			bytea NOT NULL
     )`, nil)
-	wrap_sql(db, `CREATE TABLE tags (
+	wrap_sql(db, `CREATE TABLE albums (
         name            text PRIMARY KEY,
 		cover_image_id	integer REFERENCES photos(id)
     )`, nil)
-	wrap_sql(db, `CREATE TABLE tagged_photos (
+	wrap_sql(db, `CREATE TABLE photo_albums (
         photo_id	integer REFERENCES photos(id) ON DELETE CASCADE NOT NULL,
-        tag_name   	text REFERENCES tags(name) ON DELETE CASCADE
+        album_name   	text REFERENCES albums(name) ON DELETE CASCADE
 						ON UPDATE CASCADE NOT NULL,
-        UNIQUE (photo_id, tag_name)
+        UNIQUE (photo_id, album_name)
     )`, nil)
 
 	log.Println("inserting default values")

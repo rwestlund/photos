@@ -6,7 +6,7 @@
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
-<dom-module id="tag-display">
+<dom-module id="album-display">
     <template>
         <style is="custom-style" include="iron-flex iron-flex-alignment">
         </style>
@@ -21,20 +21,20 @@
                 --iron-image-width: 100%;
                 margin: 0px 5px;
             }
-            span.tag_name {
+            span.album_name {
                 font-weight: bold;
                 font-size: large;
             }
-            span.tag_image_count {
+            span.album_image_count {
                 color: gray;
                 font-style: italic;
             }
         </style>
 
         <iron-ajax
-            auto="[[tag.cover_image_id]]"
+            auto="[[album.cover_image_id]]"
             method="GET"
-            url="/api/photos/[[tag.cover_image_id]]"
+            url="/api/photos/[[album.cover_image_id]]"
             handle-as="json"
             last-response="{{photo}}">
         </iron-ajax>
@@ -51,7 +51,7 @@
                 loading="{{loading}}">
         </iron-ajax>
 
-        <a href$="/albums/[[tag.name]]" class="plain">
+        <a href$="/albums/[[album.name]]" class="plain">
             <paper-material class="card-item">
                 <template is="dom-if" if="[[photo.id]]">
                     <iron-image src="/api/photos/[[photo.id]]/image"
@@ -59,9 +59,9 @@
                     </iron-image>
                 </template>
                 <div class="layout horizontal justified">
-                    <span class="tag_name">[[tag.name]]</span>
-                    <span class="tag_image_count">
-                        [[pretty_image_count(tag.image_count)]]
+                    <span class="album_name">[[album.name]]</span>
+                    <span class="album_image_count">
+                        [[pretty_image_count(album.image_count)]]
                     </span>
                 </div>
             </paper-material>
@@ -71,10 +71,10 @@
     <script>
         'use strict';
         Polymer({
-            is: "tag-display",
+            is: "album-display",
             behaviors: [photo_behaviors.global_behavior],
             properties: {
-                tag: {
+                album: {
                     type: String,
                 },
                 photo: {

@@ -23,7 +23,7 @@
                     --app-grid-columns: 1;
                 }
             }
-            span.tag_image_count {
+            span.album_image_count {
                 color: gray;
                 font-size: large;
                 font-style: italic;
@@ -40,18 +40,18 @@
             last-response="{{photos}}">
         </iron-ajax>
 
-         <template is="dom-if" if="[[tagName]]">
+         <template is="dom-if" if="[[albumName]]">
             <iron-ajax
-                auto="[[tagName]]"
+                auto="[[albumName]]"
                 method="GET"
-                url="/api/tags/[[tagName]]"
+                url="/api/albums/[[albumName]]"
                 handle-as="json"
-                last-response="{{tag}}">
+                last-response="{{album}}">
             </iron-ajax>
 
             <iron-ajax id="put_ajax"
                     method="PUT"
-                    url="/api/tags/[[tagName]]"
+                    url="/api/albums/[[albumName]]"
                     body="[[item_to_edit]]"
                     content-type="application/json"
                     handle-as="json"
@@ -62,11 +62,11 @@
              </iron-ajax>
 
             <div class="layout horizontal justified">
-                <span class="page_name">[[tagName]]</span>
+                <span class="page_name">[[albumName]]</span>
                 <paper-icon-button icon="icons:create" on-tap="edit_album">
                 </paper-icon-button>
-                <span class="tag_image_count">
-                    [[pretty_image_count(tag.image_count)]]
+                <span class="album_image_count">
+                    [[pretty_image_count(album.image_count)]]
                 </span>
             </div>
         </template>
@@ -88,17 +88,17 @@
             is: "photo-collection",
             behaviors: [photo_behaviors.global_behavior],
             properties: {
-                tagName: {
+                albumName: {
                     type: String,
                 },
                 search_filter: {
                     type: Object,
-                    computed: "compute_search_filter(tagName)",
+                    computed: "compute_search_filter(albumName)",
                 }
             },
-            compute_search_filter: function(tag) {
+            compute_search_filter: function(album) {
                 var o = {};
-                if (tag) o.tag= tag;
+                if (album) o.album= album;
                 return o;
             },
             // Reevaluated the app-grid styles on resize.
@@ -106,18 +106,18 @@
                 window.addEventListener("resize", () => this.updateStyles());
             },
             edit_album: function() {
-                this.set('item_to_edit', JSON.parse(JSON.stringify(this.tag)));
+                this.set('item_to_edit', JSON.parse(JSON.stringify(this.album)));
                 // Ask for the form to be opened.
                 this.fire("iron-signal", { name: "open-form",
                     data: {
-                        name: "edit_tag_form",
-                        tag: this.item_to_edit,
-                        callback: "resolve_edit_tag",
+                        name: "edit_album_form",
+                        album: this.item_to_edit,
+                        callback: "resolve_edit_album",
                         that: this,
                     },
                 });
             },
-            resolve_edit_tag: function (e, reason) {
+            resolve_edit_album: function (e, reason) {
                 if(!reason.confirmed) return;
                 // Override dirty checking; let Polymer know it changed.
                 var tmp = this.item_to_edit;

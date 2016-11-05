@@ -20,29 +20,29 @@ import (
 /* SQL to select photos. */
 var query_rows string = `
 	SELECT photos.id, photos.mimetype, photos.size, photos.creation_date,
-		photos.author_id, photos.caption, photos.filename, tp.tags
+		photos.author_id, photos.caption, photos.filename, tp.albums
 	FROM photos
 	LEFT JOIN LATERAL (
-		SELECT COALESCE(json_agg(tagged_photos.tag_name), '[]'::json)
-			AS tags
-		FROM tagged_photos
-			WHERE tagged_photos.photo_id = photos.id
+		SELECT COALESCE(json_agg(photo_albums.album_name), '[]'::json)
+			AS albums
+		FROM photo_albums
+			WHERE photo_albums.photo_id = photos.id
 		) tp ON true`
 
 /* Helper function to read Photo out of a sql.Rows object. */
 func scan_photo(row *sql.Rows) (*defs.Photo, error) {
 	/* JSON fields will need special handling. */
-	var tags string
+	var albums string
 	/* The photo we're going to read in. */
 	var p defs.Photo
 
 	err := row.Scan(&p.Id, &p.Mimetype, &p.Size, &p.CreationDate, &p.AuthorId,
-		&p.Caption, &p.Filename, &tags)
+		&p.Caption, &p.Filename, &albums)
 	if err != nil {
 		return nil, err
 	}
 	/* Unpack JSON fields. */
-	e := json.Unmarshal([]byte(tags), &p.Tags)
+	e := json.Unmarshal([]byte(albums), &p.Albums)
 	if e != nil {
 		return nil, e
 	}
@@ -51,7 +51,7 @@ func scan_photo(row *sql.Rows) (*defs.Photo, error) {
 
 /*
  * Fetch all photos from the database that match the given filter. The query
- * in the filter can match either the caption or the tag.
+ * in the filter can match either the caption or the album.
  */
 func FetchPhotos(filter *defs.ItemFilter) (*[]defs.Photo, error) {
 	_ = log.Println //DEBUG
@@ -62,7 +62,7 @@ func FetchPhotos(filter *defs.ItemFilter) (*[]defs.Photo, error) {
 	var params []interface{}
 
 	/* Tokenize search string on spaces. Each term must be matched in the
-	 * caption or tags for a photo to be returned.
+	 * caption or albums for a photo to be returned.
 	 */
 	var terms []string = strings.Split(filter.Query, " ")
 	/* Build and apply having_text. */
@@ -79,20 +79,20 @@ func FetchPhotos(filter *defs.ItemFilter) (*[]defs.Photo, error) {
 		}
 		params = append(params, "%"+term+"%")
 		query_text += strconv.Itoa(len(params)) +
-			"\n\t\t OR string_agg(tagged_photos.name, ' ') ILIKE $" +
+			"\n\t\t OR string_agg(photo_albums.name, ' ') ILIKE $" +
 			strconv.Itoa(len(params)) + ") "
 	}
 
-	if filter.Tag != "" {
+	if filter.Album != "" {
 		if query_text == "" {
 			query_text += "\n\tWHERE"
 		} else {
 			query_text += "\n\tAND"
 		}
-		query_text = "\n\t LEFT JOIN tagged_photos " +
-			"ON tagged_photos.photo_id = photos.id " + query_text
-		params = append(params, filter.Tag)
-		query_text += " tagged_photos.tag_name = $" +
+		query_text = "\n\t LEFT JOIN photo_albums " +
+			"ON photo_albums.photo_id = photos.id " + query_text
+		params = append(params, filter.Album)
+		query_text += " photo_albums.album_name = $" +
 			strconv.Itoa(len(params))
 	}
 
@@ -223,7 +223,7 @@ func CreatePhoto(photo *defs.Photo, file []byte) (*defs.Photo, error) {
 }
 
 /*
- * Take a Photo to save. Only the caption and tags can be modified.
+ * Take a Photo to save. Only the caption and albums can be modified.
  */
 func SavePhoto(photo *defs.Photo) (*defs.Photo, error) {
 	var rows *sql.Rows
@@ -237,21 +237,21 @@ func SavePhoto(photo *defs.Photo) (*defs.Photo, error) {
 	defer tx.Rollback()
 
 	/*
-	 * First we update tags. This deleting and then inserting is
+	 * First we update albums. This deleting and then inserting is
 	 * somewhat wasteful, but it's simple to implement.
 	 */
 	/* Use _ and use Exec as in http://go-database-sql.org/modifying.html. */
-	_, err = tx.Exec("DELETE FROM tagged_photos WHERE photo_id = $1", photo.Id)
+	_, err = tx.Exec("DELETE FROM photo_albums WHERE photo_id = $1", photo.Id)
 	if err != nil {
 		return nil, err
 	}
-	/* Insert the new tags. */
-	/* We assume that all the tags exist in the tags table; otherwise we'll
+	/* Insert the new albums. */
+	/* We assume that all the albums exist in the albums table; otherwise we'll
 	 * get an error and we'll fail to save. */
-	var tag string
-	for _, tag = range photo.Tags {
-		_, err = tx.Exec(`INSERT INTO tagged_photos (photo_id, tag_name)
-                VALUES ($1, $2)`, photo.Id, tag)
+	var album string
+	for _, album = range photo.Albums {
+		_, err = tx.Exec(`INSERT INTO photo_albums (photo_id, album_name)
+                VALUES ($1, $2)`, photo.Id, album)
 		if err != nil {
 			return nil, err
 		}

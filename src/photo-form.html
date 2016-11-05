@@ -15,7 +15,7 @@
                 display: block;
             }
 
-            .tag-item {
+            .album-item {
                 margin-right: 1em;
                 padding-right: 1em;
             }
@@ -25,9 +25,9 @@
         <iron-ajax
             auto
             method="GET"
-            url="/api/tags"
+            url="/api/albums"
             handle-as="json"
-            last-response="{{tags}}">
+            last-response="{{albums}}">
         </iron-ajax>
 
         <responsive-dialog id="dialog"
@@ -43,14 +43,14 @@
                     char-counter maxlength="140">
             </paper-input>
 
-            <strong class="photo-item-label">Tags</strong>
+            <strong class="photo-item-label">Albums</strong>
                 <div class="layout horizontal wrap">
-                    <template is="dom-repeat" items="[[photo.tags]]">
-                        <paper-material class="tag-item">
+                    <template is="dom-repeat" items="[[photo.albums]]">
+                        <paper-material class="album-item">
                             <paper-icon-button
                                     icon="icons:cancel"
                                     data-index$="[[index]]"
-                                    on-tap="remove_tag">
+                                    on-tap="remove_album">
                             </paper-icon-button>
                             <span>[[item]]</span>
                         </paper-material>
@@ -59,14 +59,14 @@
 
             <div class="layout vertical">
                 <paper-dropdown-menu
-                        label="Select Tags"
+                        label="Select Albums"
                         vertical-align="top"
                         horizontal-align="right">
                     <paper-menu class="dropdown-content"
                                 attr-for-selected="value"
-                                selected="{{selected_tag}}"
-                                on-iron-select="add_selected_tag">
-                        <template is="dom-repeat" items="[[tags]]">
+                                selected="{{selected_album}}"
+                                on-iron-select="add_selected_album">
+                        <template is="dom-repeat" items="[[albums]]">
                             <paper-item value="[[item.name]]">
                                 [[item.name]]
                             </paper-item>
@@ -87,16 +87,16 @@
                     type: Object,
                 },
             },
-            // Add a tag to the tag list, checking for duplicates first.
-            add_selected_tag: function() {
-                for (var i in this.photo.tags)
-                    if (this.photo.tags[i] === this.selected_tag) return;
-                this.push('photo.tags', this.selected_tag);
+            // Add an album to the album list, checking for duplicates first.
+            add_selected_album: function() {
+                for (var i in this.photo.albums)
+                    if (this.photo.albums[i] === this.selected_album) return;
+                this.push('photo.albums', this.selected_album);
             },
-            remove_tag: function(e) {
+            remove_album: function(e) {
                 var index = Number(
                         e.currentTarget.attributes['data-index'].value);
-                this.splice('photo.tags', index, 1);
+                this.splice('photo.albums', index, 1);
             },
         })
     </script>

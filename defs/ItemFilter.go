@@ -16,6 +16,6 @@ type ItemFilter struct {
 	Count uint32
 	/* Skip this many pages of results. */
 	Skip uint32
-	/* Only get results with this tag. */
-	Tag string
+	/* Only get results with this album. */
+	Album string
 }

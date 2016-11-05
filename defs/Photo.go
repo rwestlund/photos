@@ -20,5 +20,5 @@ type Photo struct {
 	AuthorId     uint32    `json:"author_id"`
 	Caption      string    `json:"caption"`
 	/* Fields from other tables. */
-	Tags []string `json:"tags"`
+	Albums []string `json:"albums"`
 }

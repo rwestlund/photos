@@ -7,7 +7,7 @@
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
-<dom-module id="tag-collection">
+<dom-module id="album-collection">
     <template>
         <style is="custom-style" include="app-grid-style"></style>
         <style>
@@ -26,14 +26,14 @@
         <iron-ajax
             auto
             method="GET"
-            url="/api/tags"
+            url="/api/albums"
             handle-as="json"
-            last-response="{{tags}}">
+            last-response="{{albums}}">
         </iron-ajax>
 
         <div class="app-grid">
-            <template is="dom-repeat" items="[[tags]]">
-                <tag-display tag="[[item]]"></tag-display>
+            <template is="dom-repeat" items="[[albums]]">
+                <album-display album="[[item]]"></album-display>
             </template>
         </div>
     </template>
@@ -41,7 +41,7 @@
     <script>
         'use strict';
         Polymer({
-            is: "tag-collection",
+            is: "album-collection",
             // Reevaluated the app-grid styles on resize.
             attached: function() {
                 window.addEventListener("resize", () => this.updateStyles());
