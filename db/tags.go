@@ -144,6 +144,6 @@ func UpdateTag(name string, tag *defs.Tag) (*defs.Tag, error) {
 
 	/* At this point, we just need to read back the tag. */
 	/* TODO replace this with RETURNING */
-	tag, err = FetchTag(name)
+	tag, err = FetchTag(tag.Name)
 	return tag, err
 }
