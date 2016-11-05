@@ -86,7 +86,12 @@
             app-toolbar {
                 background-color: var(--header-background-color);
                 background-image: url("images/header_leaves.jpg");
-                background-size: cover;
+                background-repeat: repeat-x;
+            }
+            @media(max-width: 1400px) {
+                app-toolbar {
+                    background-size: cover;
+                }
             }
             hr {
                 border-color: var(--dark-background-color);
