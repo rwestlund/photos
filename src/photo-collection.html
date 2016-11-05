@@ -31,6 +31,9 @@
 
         </style>
 
+        <cookie-display cookie-name="role" cookie-value="{{user_role}}">
+        </cookie-display>
+
         <iron-ajax
             auto
             method="GET"
@@ -62,9 +65,15 @@
              </iron-ajax>
 
             <div class="layout horizontal justified">
-                <span class="page_name">[[albumName]]</span>
-                <paper-icon-button icon="icons:create" on-tap="edit_album">
-                </paper-icon-button>
+                <div>
+                    <span class="page_name">[[albumName]]</span>
+                    <template is="dom-if" if="[[user_is_admin(user_role)]]">
+                        <paper-icon-button icon="icons:create"
+                                on-tap="edit_album">
+                        </paper-icon-button>
+                        <paper-spinner active="[[loading]]"></paper-spinner>
+                    </template>
+                </div>
                 <span class="album_image_count">
                     [[pretty_image_count(album.image_count)]]
                 </span>
