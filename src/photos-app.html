@@ -229,7 +229,7 @@
                     <app-toolbar>
                         <paper-icon-button class="header" icon="menu" drawer-toggle>
                         </paper-icon-button>
-                        <div main-title>Photos</div>
+                        <div main-title>[[get_page_name(route_data.page)]]</div>
                         <template is="dom-if" if="[[!mobile]]">
                             <template is="dom-if" if="[[user_name]]">
                                 <iron-icon class="header" icon="icons:account-circle">
@@ -269,26 +269,25 @@
                     fallback-selection="404">
 
                     <section name="">
-                        <span class="page_name">Recent Photos</span>
+                         <!-- Recent photos -->
                         <photo-collection>
                         </photo-collection>
                     </section>
 
                     <section name="albums">
+                         <!-- Albums -->
                         <template is="dom-if" if="[[albums_route_data.album]]">
                             <photo-collection album-name="[[albums_route_data.album]]">
                             </photo-collection>
                         </template>
 
                         <template is="dom-if" if="[[!albums_route_data.album]]">
-                            <span class="page_name">Albums</span>
                             <album-collection></album-collection>
                         </template>
                     </section>
 
                     <section name="about">
-                        <span class="page_name">About</span>
-
+                         <!-- About -->
                         <p>Welcome to our photo site!</p>
 
                         <p>Family and friends will have the ability to log in and
@@ -302,10 +301,11 @@
 
                     <template is="dom-if" if="[[user_is_admin(user_role)]]">
                         <section name="users">
-                            <span class="page_name">Users</span>
+                             <!-- Users -->
                         </section>
 
                         <section name="uploads">
+                             <!-- Uploads -->
                             <photos-uploads></photos-uploads>
                         </section>
                     </template>
@@ -367,7 +367,18 @@
             },
             post_item_failed: function() {
                 console.log("failed to update")
-            }
+            },
+            get_page_name: function(page) {
+                switch (page) {
+                    case "": return "Recent Photos";
+                    case "albums": return "Albums";
+                    case "about": return "About";
+                    case "users": return "Users";
+                    case "uploads": return "Uploads";
+                    default: return "Photos";
+                }
+            },
+
         });
     </script>
 </dom-module>
