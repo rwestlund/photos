@@ -19,6 +19,10 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"image"
+	"image/jpeg"
+	"image/png"
+	"github.com/nfnt/resize"
 )
 
 /*
@@ -173,13 +177,43 @@ func handle_post_photo(res http.ResponseWriter, req *http.Request) {
 	photo.Filename = header.Filename
 	photo.Mimetype = header.Header.Get("Content-Type")
 
-	var buff bytes.Buffer
-	photo.Size, err = buff.ReadFrom(file)
+	/* Full size image. */
+	var photo_buff bytes.Buffer
+	photo.Size, err = photo_buff.ReadFrom(file)
+
+	/* Create thumbnail. */
+	var img image.Image
+	var img_type string
+	img, img_type, err = image.Decode(&photo_buff)
+	if err != nil {
+		log.Println(err)
+		res.WriteHeader(400)
+		return
+	}
+	var thumb image.Image = resize.Thumbnail(800, 800, img, resize.Lanczos3)
+
+	/* Put thumbnail into a byte array for the database. */
+	var thumb_buff bytes.Buffer
+	if img_type == "jpeg" {
+		err = jpeg.Encode(&thumb_buff, thumb, nil)
+	} else if img_type == "png" {
+		err = png.Encode(&thumb_buff, thumb)
+	} else {
+		log.Println("Unsupported image type: " + img_type)
+		res.WriteHeader(400)
+		return
+	}
+	if err != nil {
+		log.Println(err)
+		res.WriteHeader(400)
+		return
+	}
 
 	var new_photo *defs.Photo
 	/* Fill in the currently logged-in user as the author. */
 	photo.AuthorId = usr.Id
-	new_photo, err = db.CreatePhoto(&photo, buff.Bytes())
+	new_photo, err = db.CreatePhoto(&photo, photo_buff.Bytes(),
+		thumb_buff.Bytes())
 
 	if err != nil {
 		log.Println(err)
@@ -267,6 +301,39 @@ func handle_photo_image(res http.ResponseWriter, req *http.Request) {
 	/* If we made it here, send good response. */
 	res.Write(image)
 }
+
+/*
+ * Request a specific photo thumbnail.
+ * GET /api/photo/3/thumbnail
+ */
+func handle_photo_thumbnail(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-Type", "application/binary")
+
+	/* Get id parameter. */
+	var params map[string]string = mux.Vars(req)
+	bigid, err := strconv.ParseUint(params["id"], 10, 32)
+	if err != nil {
+		log.Println(err)
+		res.WriteHeader(400)
+		return
+	}
+	var id uint32 = uint32(bigid)
+
+	var image []byte
+	image, err = db.FetchPhotoThumbnail(id)
+	if err == sql.ErrNoRows {
+		res.WriteHeader(404)
+		return
+	} else if err != nil {
+		res.WriteHeader(500)
+		log.Println(err)
+		return
+	}
+
+	/* If we made it here, send good response. */
+	res.Write(image)
+}
+
 
 /*
  * Delete a photo by id.

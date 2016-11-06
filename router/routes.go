@@ -53,7 +53,12 @@ var routes = Routes{
 		"/api/photos/{id:[0-9]+}/image",
 		handle_photo_image,
 	},
-
+	Route{
+		"photo",
+		[]string{"GET", "HEAD"},
+		"/api/photos/{id:[0-9]+}/thumbnail",
+		handle_photo_thumbnail,
+	},
 	Route{
 		"photos",
 		[]string{"GET", "HEAD"},

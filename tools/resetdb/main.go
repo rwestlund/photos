@@ -59,7 +59,8 @@ func main() {
                             DEFAULT CURRENT_TIMESTAMP,
         author_id   	integer NOT NULL REFERENCES users(id),
 		caption			text NOT NULL DEFAULT '',
-		image			bytea NOT NULL
+		image			bytea NOT NULL,
+		thumbnail		bytea NOT NULL
     )`, nil)
 	wrap_sql(db, `CREATE TABLE albums (
         name            text PRIMARY KEY,

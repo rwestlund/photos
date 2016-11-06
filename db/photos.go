@@ -187,21 +187,46 @@ func FetchPhotoImage(id uint32) ([]byte, error) {
 	return image, nil
 }
 
+/* Fetch one photo thumbnail by id. */
+func FetchPhotoThumbnail(id uint32) ([]byte, error) {
+	/* Read photo from database. */
+	var rows *sql.Rows
+	var err error
+	rows, err = DB.Query("SELECT thumbnail FROM photos WHERE id = $1", id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	/* Make sure we have a row returned. */
+	if !rows.Next() {
+		return nil, sql.ErrNoRows
+	}
+
+	var image []byte
+	err = rows.Scan(&image)
+	if err != nil {
+		return nil, err
+	}
+	return image, nil
+}
+
 /*
  * Take a reference to a Photo and create it in the database, returning fields
  * in the passed object.
  * TODO this doesn't work yet
  */
-func CreatePhoto(photo *defs.Photo, file []byte) (*defs.Photo, error) {
+func CreatePhoto(photo *defs.Photo, file []byte, thumb []byte) (*defs.Photo,
+		error) {
 	var rows *sql.Rows
 	var err error
 	//TODO some input validation would be nice
 	rows, err = DB.Query(`
-			INSERT INTO photos (caption, mimetype, author_id, filename, size, image)
-            VALUES ($1, $2, $3, $4, $5, $6)
-                RETURNING id`,
+			INSERT INTO photos (caption, mimetype, author_id, filename, size,
+				image, thumbnail)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+			RETURNING id`,
 		photo.Caption, photo.Mimetype, photo.AuthorId, photo.Filename,
-		photo.Size, file)
+		photo.Size, file, thumb)
 	if err != nil {
 		return nil, err
 	}
