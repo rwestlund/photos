@@ -46,10 +46,12 @@
             <template is="dom-if" if="[[user_is_admin(user_role)]]">
                 <paper-icon-button icon="icons:create" on-tap="edit_photo">
                 </paper-icon-button>
-                <paper-icon-button icon="image:photo-album"
-                        on-tap="set_album_image">
+                <template is="dom-if" if="[[album]]">
+                    <paper-icon-button icon="image:photo-album"
+                            on-tap="set_album_image">
+                    </paper-icon-button>
+                </template>
                 <paper-spinner active="[[loading]]"></paper-spinner>
-                </paper-icon-button>
             </template>
             <iron-image src="/api/photos/[[photo.id]]/image" preload fade>
             </iron-image>
