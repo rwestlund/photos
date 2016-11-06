@@ -11,6 +11,8 @@
         <iron-signals on-iron-signal-open-form="open_form"></iron-signals>
 
         <photo-form id="edit_photo_form"></photo-form>
+        <user-form id="create_user_form" title="Create new user"></user-form>
+        <user-form id="edit_user_form"></user-form>
         <album-form id="create_album_form"></album-form>
         <album-form id="edit_album_form" title="Edit album name"></album-form>
     </template>
@@ -51,7 +53,7 @@
                 // If any of these properties are given from the signal, assign
                 // them to the form. This prevents needing a large switch to set
                 // up each form.
-                var props = [ "photo", "album" ];
+                var props = [ "photo", "album", "user" ];
                 props.forEach(p => {
                     if (data[p]) this.$[data.name][p] = data[p];
                 });

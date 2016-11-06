@@ -13,16 +13,47 @@
             }
             paper-material.card-item {
                 padding: 10px;
-            }
-            span.page_name {
-                font-weight: bold;
-                font-size: large;
+                margin-bottom: 10px;
             }
             paper-material {
                 background-color: white;
             }
+            paper-fab {
+                position: fixed;
+                bottom: 1em;
+                right: 2em;
+                z-index: 100;
+            }
             paper-button {
                 background-color: white;
+            }
+            .card-title {
+                margin-bottom: 0;
+                margin-top: 0;
+            }
+            iron-icon.large-icon {
+                --iron-icon-width: 4em;
+                --iron-icon-height: 4em;
+                --iron-icon-fill-color: gray;
+            }
+            /* This makes a table able to wrap long normally unbreakable
+               content like email addresses. The two td classes below should be
+               used for data. The 80% width is to allow an icon to the left in
+               a flexbox layout.  */
+            table.fixed-80 {
+                table-layout: fixed;
+                width: 80%;
+            }
+            td.td-label {
+                vertical-align: top;
+                text-align: right;
+                padding-right: 0.8em;
+                /* 4em is long enough for phone|email|fax. */
+                width: 4em;
+            }
+            td.td-field {
+                overflow: hidden;
+                word-wrap: break-word;
             }
         </style>
     </template>

@@ -1,0 +1,297 @@
+<!--
+    Copyright (c) 2016. Randy Westlund and Jacqueline Kory Westlund.
+    All rights reserved.
+    This code is under the BSD-2-Clause license.
+-->
+<!-- This module shows a list of items, with server-side pagination and
+     search. -->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="item-collection">
+    <template>
+        <style is="custom-style" include="iron-flex"></style>
+        <style is="custom-style" include="global-styles"></style>
+        <style>
+            :host {
+                display: block;
+            }
+            paper-input {
+                min-width: 10em;
+            }
+            .nav-button {
+                margin-left: 0.8em;
+                margin-right: 0.8em;
+            }
+            /* Buttons will expand and shrink between these limits depending
+               on screen size. */
+            .nav-buttons {
+                min-width: 19em;
+                max-width: 25em;
+            }
+            .nav-buttons paper-button {
+                min-width: 3em;
+                max-width: 5em;
+            }
+            .search-row {
+                min-width: 19em;
+            }
+            .global-filters {
+                margin-top: 1em;
+            }
+            /* The main flex groups need this to wrap properly on iOS. */
+            .global-filters > div {
+                flex: 1 0 auto;
+            }
+
+        </style>
+
+        <iron-media-query query="(max-width: 600px)"
+                query-matches="{{is_mobile}}">
+        </iron-media-query>
+
+        <!-- AJAX requests. -->
+        <iron-ajax auto method="GET"
+                id="get_items_ajax"
+                url="/api/[[itemName]]"
+                params="[[search_filter]]"
+                handle-as="json"
+                last-response="{{items}}"
+                debounce-duration="100"
+                on-error="loading_data_failed"
+                on-response="new_items_received"
+                loading="{{loading.get_items}}">
+        </iron-ajax>
+        <iron-ajax id="create_item_ajax"
+                method="POST"
+                url="/api/[[itemName]]"
+                body="[[new_item]]"
+                content-type="application/json"
+                handle-as="json"
+                last-response="{{new_item}}"
+                on-error="creating_item_failed"
+                on-response="creating_item_succeeded"
+                loading="{{loading.post_item}}">
+        </iron-ajax>
+
+        <div class="layout horizontal center wrap global-filters">
+            <!-- Navigation icons. -->
+            <div class="layout horizontal center flex nav-buttons">
+                <paper-spinner class="nav-button" active="[[loading_data]]">
+                </paper-spinner>
+                <div class="nav-button">Page&nbsp;[[page_number]]</div>
+                <paper-button class="flex" raised on-tap="refresh">
+                    <iron-icon icon="icons:refresh"></iron-icon>
+                </paper-button>
+                <paper-button class="flex" raised on-tap="previous"
+                        disabled$="[[!skip]]">
+                    <iron-icon icon="icons:arrow-back"></iron-icon>
+                </paper-button>
+                <paper-button class="flex" raised on-tap="next"
+                        disabled$="[[disable_next]]">
+                    <iron-icon icon="icons:arrow-forward"></iron-icon>
+                </paper-button>
+            </div>
+            <!-- Search box. -->
+            <div class="layout horizontal center flex search-row">
+                <paper-input class="flex" label="Filter" no-label-float
+                    type="text" value="{{search_text}}">
+                    <paper-icon-button suffix icon="icons:clear"
+                            on-tap="clear_text" data-clear="search_text">
+                    </paper-icon-button>
+                </paper-input>
+            </div>
+        </div>
+
+        <!-- Display a list of whichever item we're showing. -->
+        <template is="dom-if" if="[[equal(itemName, 'albums')]]">
+            <template is="dom-repeat" items="[[items]]">
+                <customer-display customer="[[item]]"></customer-display>
+            </template>
+        </template>
+
+        <template is="dom-if" if="[[equal(itemName, 'users')]]">
+            <template is="dom-repeat" items="[[items]]">
+                <!-- This is bound with {{}} because it can edit/PUT data. -->
+                <user-display allow-edit user="{{item}}"
+                        on-delete-item="remove_item">
+                </user-display>
+            </template>
+        </template>
+
+        <!-- FAB to trigger creation forms. -->
+        <template is="dom-if" if="[[show_fab(itemName)]]">
+            <paper-fab icon="icons:add" on-tap="create_item">
+            </paper-fab>
+        </template>
+
+
+        <!-- Show bottom buttons if there are several items listed. -->
+        <template is="dom-if" if="[[show_bottom_buttons(items)]]">
+            <div class="layout horizontal-reverse center wrap">
+                <!-- Navigation icons. -->
+                <paper-button raised on-tap="next" disabled$="[[disable_next]]">
+                    <iron-icon icon="icons:arrow-forward"></iron-icon>
+                </paper-button>
+                <paper-button raised on-tap="previous" disabled$="[[!skip]]">
+                    <iron-icon icon="icons:arrow-back"></iron-icon>
+                </paper-button>
+                <div class="nav-button">Page {{page_number}}</div>
+                <paper-spinner class="nav-button" active="[[loading_data]]">
+                </paper-spinner>
+            </div>
+        </template>
+    </template>
+
+    <script>
+        (function () {
+            'use strict';
+            Polymer({
+                is: 'item-collection',
+                behaviors: [ photo_behaviors.global_behavior ],
+                properties: {
+                    // The parent provides 'jobs' or 'customers' here.
+                    itemName: {
+                        type: String,
+                    },
+                    items: {
+                        type: Array,
+                        value: [],
+                    },
+                    count: {
+                        type: Number,
+                        value: 20
+                    },
+                    skip: {
+                        type: Number,
+                        value: 0
+                    },
+                    page_number: {
+                        type: Number,
+                        computed: "compute_page_number(skip)"
+                    },
+                    search_text: {
+                        type: String,
+                        value: ''
+                    },
+                    search_filter: {
+                        type: Object,
+                        computed: "compute_search_filter(count, skip, "
+                                                + "search_text)"
+                    },
+                    disable_next: {
+                        type: Boolean,
+                        computed: "compute_disable_next(items, count)"
+                    },
+                },
+                compute_search_filter: function(count, skip, search_text) {
+                    var o = { count: count };
+                    if (skip) o.skip = skip;
+                    if (search_text) o.query = search_text;
+                    return o;
+                },
+                compute_disable_next: function(items, count) {
+                    var val = true;
+                    if (this.items)
+                        val = this.items.length < this.count;
+                    return val;
+                },
+                compute_page_number: function(skip) {
+                    return skip + 1;
+                },
+                // Reload the collection of items.
+                refresh: function() {
+                    this.$.get_items_ajax.generateRequest();
+                },
+                // Open the appropriate form after a click on the FAB.
+                create_item: function() {
+                    this.set('new_item', {});
+                    var data = { that: this, callback: "resolve_create_item" };
+
+                    switch (this.itemName) {
+                        case "users":
+                            data.name = "create_user_form";
+                            data.user = this.new_item;
+                            break;
+                    }
+                    // Ask for the form to be opened, whichever one it is.
+                    this.fire("iron-signal", { name: "open-form", data: data });
+                },
+                // Handle response from dialog. Reason is either confirmed or
+                // canceled.
+                resolve_create_item: function(e, reason) {
+                    if (!reason.confirmed) return;
+                    // Override dirty checking; let Polymer know it changed.
+                    var tmp = this.new_item;
+                    this.set("new_item", {});
+                    this.set("new_item", tmp);
+                    this.$.create_item_ajax.generateRequest();
+                },
+                creating_item_succeeded: function() {
+                    // This isn't in shorter form like the one below because
+                    // some pages need to change the route.
+                    if (this.itemName === "customers") {
+                        this.fire("iron-signal", {
+                            name: "success-toast",
+                            data: "Customer " +
+                                this.customer_full_name(this.new_item) +
+                                " created",
+                        });
+                        // Go to the customers page for the new customer.
+                        window.history.pushState({}, null,
+                                "/customers/" + this.new_item.id);
+                        window.dispatchEvent(new CustomEvent("location-changed"));
+                    }
+                    else if(this.itemName === "users") {
+                        this.fire("iron-signal", {
+                            name: "success-toast",
+                            data: this.new_item.role + " " +
+                                    (this.new_item.name || this.new_item.email)
+                                    + " created",
+                        });
+                        this.push("items", this.new_item);
+                    }
+                },
+                creating_item_failed: function(e, data) {
+                    if (data.error) this.check_ajax_status(data.request);
+                    var msg;
+                    if (this.itemName === "customers")
+                        msg = "Failed to create customer :(";
+                    else if (this.itemName === "users")
+                        msg = "Failed to create user :(";
+
+                    this.fire("iron-signal", {
+                        name: "error-toast",
+                        data: msg,
+                    });
+                },
+                // Simply remove the element from the DOM.
+                remove_item: function(e, item) {
+                    this.splice('items', this.items.indexOf(item), 1);
+                },
+                previous: function() {
+                    if (this.skip) this.skip--;
+                },
+                next: function() {
+                    this.skip++;
+                },
+                // When new items are received, back up a page if the
+                // current one is blank.
+                new_items_received: function() {
+                    if (this.items && !this.items.length && this.skip)
+                        this.skip--;
+                },
+                // Whether to show the FAB or not. The item must be an arg for
+                // Polymer to evaluate it properly.
+                show_fab: function(item_name) {
+                    return true;
+                },
+                // Only show bottom nav buttons if there are several items.
+                show_bottom_buttons: function(items) {
+                    if (!items) return false;
+                    return items.length > 5;
+                },
+            });
+        })();
+    </script>
+</dom-module>

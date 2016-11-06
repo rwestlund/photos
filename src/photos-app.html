@@ -11,6 +11,7 @@
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../bower_components/iron-icons/image-icons.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/social-icons.html">
 <link rel="import" href="../bower_components/iron-icons/maps-icons.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
@@ -21,6 +22,7 @@
 <link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-image/iron-image.html">
@@ -45,7 +47,10 @@
 <link rel="import" href="album-form.html">
 <link rel="import" href="cookie-display.html">
 <link rel="import" href="album-collection.html">
+<link rel="import" href="item-collection.html">
 <link rel="import" href="album-display.html">
+<link rel="import" href="user-display.html">
+<link rel="import" href="user-form.html">
 
 <dom-module id="photos-app">
     <template>
@@ -61,8 +66,8 @@
                 --light-header-text-color: #fbf2ea;
                 --dark-header-text-color: #2a1a09;
 
-                /* paper-menu */
                 --paper-menu-background-color: var(--medium-background-color);
+                --paper-fab-background: var(--header-background-color);
 
                 /* These apply to the application menu drawer. */
                 --app-drawer-content-container: {
@@ -302,6 +307,8 @@
                     <template is="dom-if" if="[[user_is_admin(user_role)]]">
                         <section name="users">
                              <!-- Users -->
+                            <item-collection item-name="users">
+                            </item-collection>
                         </section>
 
                         <section name="uploads">

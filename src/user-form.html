@@ -1,0 +1,68 @@
+<!--
+    Copyright (c) 2016. Randy Westlund and Jacqueline Kory Westlund.
+    All rights reserved.
+    This code is under the BSD-2-Clause license.
+-->
+<!-- This module displays a user editing form. -->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="user-form">
+    <template>
+        <style is="custom-style" include="iron-flex"></style>
+        <style is="custom-style" include="global-styles"></style>
+        <responsive-dialog id="dialog"
+                   title="[[title]]"
+                   dismiss-text="Cancel"
+                   confirm-text="Save"
+                   on-iron-overlay-closed="resolve_dialog">
+
+            <div class="layout vertical">
+                <paper-dropdown-menu label="Account Role"
+                            vertical-align="top" horizontal-align="right">
+                    <paper-menu class="dropdown-content"
+                            attr-for-selected="value"
+                            selected="{{user.role}}">
+                        <template is="dom-repeat"
+                                items="[[constants.user_roles]]">
+                            <paper-item value="[[item]]">[[item]]</paper-item>
+                        </template>
+                    </paper-menu>
+                </paper-dropdown-menu>
+            </div>
+
+            <paper-input
+                    type="email"
+                    label="Email"
+                    value="{{user.email}}"
+                    char-counter maxlength="50">
+                <paper-icon-button suffix
+                        icon="icons:clear"
+                        on-tap="clear_field">
+                </paper-icon-button>
+            </paper-input>
+
+        </responsive-dialog>
+    </template>
+
+    <script>
+        (function () {
+            'use strict';
+            Polymer({
+                is: 'user-form',
+                behaviors: [ photo_behaviors.global_behavior,
+                            photo_behaviors.form_behavior ],
+                properties: {
+                    // Must be provided by parent object.
+                    user: {
+                        type: Object,
+                    },
+                    title: {
+                        type: String,
+                        value: "Edit User",
+                    },
+                },
+            });
+        })();
+    </script>
+</dom-module>
