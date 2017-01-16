@@ -10,6 +10,28 @@
 <dom-module id="photos-uploads">
     <template>
         <style is="custom-style" include="global-styles"></style>
+        <style>
+            :host {
+                display: block;
+
+                --vaadin-upload-drop-label: {
+                    color: var(--secondary-text-color);
+                }
+            }
+            vaadin-upload {
+                --primary-color: var(--dark-background-color);
+                --light-primary-color: var(--medium-background-color);
+                background-color: #ffffff;
+            }
+            vaadin-upload[nodrop] {
+                background-color: inherit;
+            }
+
+            div.uploads {
+                margin-top: var(--app-grid-gutter);
+            }
+
+        </style>
 
         <vaadin-upload target="/api/photos" accept="image/*,video/*">
             <div class="drop-label">
