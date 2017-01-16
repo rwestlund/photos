@@ -12,17 +12,17 @@ import (
 	"database/sql"
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"github.com/nfnt/resize"
 	"github.com/rwestlund/photos/db"
 	"github.com/rwestlund/photos/defs"
+	"image"
+	"image/jpeg"
+	"image/png"
 	"log"
 	"mime/multipart"
 	"net/http"
 	"net/url"
 	"strconv"
-	"image"
-	"image/jpeg"
-	"image/png"
-	"github.com/nfnt/resize"
 )
 
 /*
@@ -39,7 +39,7 @@ func build_item_filter(url *url.URL) *defs.ItemFilter {
 		Query: url.Query().Get("query"),
 		Count: uint32(bigcount),
 		Skip:  uint32(bigskip),
-		Album:   url.Query().Get("album"),
+		Album: url.Query().Get("album"),
 	}
 	return &filter
 }
@@ -341,7 +341,6 @@ func handle_photo_thumbnail(res http.ResponseWriter, req *http.Request) {
 	/* If we made it here, send good response. */
 	res.Write(image)
 }
-
 
 /*
  * Delete a photo by id.

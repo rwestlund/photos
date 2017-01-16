@@ -216,7 +216,7 @@ func FetchPhotoThumbnail(id uint32) ([]byte, error) {
  * TODO this doesn't work yet
  */
 func CreatePhoto(photo *defs.Photo, file []byte, thumb []byte) (*defs.Photo,
-		error) {
+	error) {
 	var rows *sql.Rows
 	var err error
 	/* Start a transaction. */
