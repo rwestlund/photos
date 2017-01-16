@@ -1,0 +1,97 @@
+<!--
+    Copyright (c) 2016. Randy Westlund and Jacqueline Kory Westlund.
+    All rights reserved.
+    This code is under the BSD-2-Clause license.
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="select-album-form">
+    <template>
+        <style is="custom-style" include="iron-flex iron-flex-alignment">
+
+            .photo-item-label {
+                padding-top: 1.2em;
+                display: block;
+            }
+
+            .album-item {
+                margin-right: 1em;
+                padding-right: 1em;
+            }
+
+        </style>
+
+        <iron-ajax
+            auto
+            method="GET"
+            url="/api/albums"
+            handle-as="json"
+            last-response="{{albums}}">
+        </iron-ajax>
+
+        <responsive-dialog id="dialog"
+                title="Select albums to upload to"
+                dismiss-text="Cancel"
+                confirm-text="Select"
+                on-iron-overlay-closed="resolve_dialog">
+
+              <strong class="photo-item-label">Albums</strong>
+                <div class="layout horizontal wrap">
+                    <template is="dom-repeat" items="[[selectedAlbums]]">
+                        <paper-material class="album-item">
+                            <paper-icon-button
+                                    icon="icons:cancel"
+                                    data-index$="[[index]]"
+                                    on-tap="remove_album">
+                            </paper-icon-button>
+                            <span>[[item]]</span>
+                        </paper-material>
+                    </template>
+                </div>
+
+            <div class="layout vertical">
+                <paper-dropdown-menu
+                        label="Select Albums"
+                        vertical-align="top"
+                        horizontal-align="right">
+                    <paper-menu class="dropdown-content"
+                                attr-for-selected="value"
+                                selected="{{selected_album}}"
+                                on-iron-select="add_selected_album">
+                        <template is="dom-repeat" items="[[albums]]">
+                            <paper-item value="[[item.name]]">
+                                [[item.name]]
+                            </paper-item>
+                        </template>
+                    </paper-menu>
+                </paper-dropdown-menu>
+            </div>
+        </responsive-dialog>
+    </template>
+
+    <script>
+        'use strict';
+        Polymer({
+            is: "select-album-form",
+            behaviors: [ photo_behaviors.form_behavior ],
+            properties: {
+                selectedAlbums: {
+                    type: Array,
+                    value: [],
+                },
+            },
+            // Add an album to the album list, checking for duplicates first.
+            add_selected_album: function() {
+                for (var i in this.selectedAlbums)
+                    if (this.selectedAlbums[i] === this.selected_album) return;
+                this.push('selectedAlbums', this.selected_album);
+            },
+            remove_album: function(e) {
+                var index = Number(
+                        e.currentTarget.attributes['data-index'].value);
+                this.splice('selectedAlbums', index, 1);
+            },
+        })
+    </script>
+</dom-module>

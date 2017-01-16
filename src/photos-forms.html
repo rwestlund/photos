@@ -15,6 +15,7 @@
         <user-form id="edit_user_form"></user-form>
         <album-form id="create_album_form"></album-form>
         <album-form id="edit_album_form" title="Edit album name"></album-form>
+        <select-album-form id="select_album_form"></select-album-form>
     </template>
 
     <script>
@@ -53,7 +54,7 @@
                 // If any of these properties are given from the signal, assign
                 // them to the form. This prevents needing a large switch to set
                 // up each form.
-                var props = [ "photo", "album", "user" ];
+                var props = [ "photo", "album", "user", "selectedAlbums" ];
                 props.forEach(p => {
                     if (data[p]) this.$[data.name][p] = data[p];
                 });
