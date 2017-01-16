@@ -209,6 +209,14 @@ func handle_post_photo(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	/* Add albums */
+	var albums_string string = req.FormValue("albums")
+	err = json.Unmarshal([]byte(albums_string), &photo.Albums)
+	if err != nil {
+		log.Println(err)
+		log.Println(photo.Albums)
+	}
+
 	var new_photo *defs.Photo
 	/* Fill in the currently logged-in user as the author. */
 	photo.AuthorId = usr.Id

@@ -219,8 +219,15 @@ func CreatePhoto(photo *defs.Photo, file []byte, thumb []byte) (*defs.Photo,
 		error) {
 	var rows *sql.Rows
 	var err error
+	/* Start a transaction. */
+	var tx *sql.Tx
+	tx, err = DB.Begin()
+	/* Implicitly rollback if we exit with an error. */
+	defer tx.Rollback()
+
 	//TODO some input validation would be nice
-	rows, err = DB.Query(`
+	// First we create the photo.
+	rows, err = tx.Query(`
 			INSERT INTO photos (caption, mimetype, author_id, filename, size,
 				image, thumbnail)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -230,7 +237,6 @@ func CreatePhoto(photo *defs.Photo, file []byte, thumb []byte) (*defs.Photo,
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 	/* Make sure we have a row returned. */
 	if !rows.Next() {
 		return nil, sql.ErrNoRows
@@ -241,9 +247,29 @@ func CreatePhoto(photo *defs.Photo, file []byte, thumb []byte) (*defs.Photo,
 	if err != nil {
 		return nil, err
 	}
+	/* This must be closed before commit; defer doesn't work. */
+	rows.Close()
+
+	/* Insert the new albums. */
+	/* We assume that all the albums exist in the albums table; otherwise we'll
+	 * get an error and we'll fail to save. */
+	var album string
+	for _, album = range photo.Albums {
+		_, err = tx.Exec(`INSERT INTO photo_albums (photo_id, album_name)
+                VALUES ($1, $2)`, id, album)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	/* Everything worked, time to commit the transaction. */
+	err = tx.Commit()
+	if err != nil {
+		return nil, err
+	}
+
 	/* At this point, we just need to read back the new photo. */
 	photo, err = FetchPhoto(id)
-
 	return photo, err
 }
 
