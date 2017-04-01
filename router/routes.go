@@ -60,6 +60,12 @@ var routes = Routes{
 		handle_photo_thumbnail,
 	},
 	Route{
+		"photo",
+		[]string{"GET", "HEAD"},
+		"/api/photos/{id:[0-9]+}/big_thumbnail",
+		handle_photo_big_thumbnail,
+	},
+	Route{
 		"photos",
 		[]string{"GET", "HEAD"},
 		"/api/photos",
