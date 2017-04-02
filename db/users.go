@@ -31,7 +31,7 @@ func scan_user(rows *sql.Rows) (*defs.User, error) {
 	 * is not valid.
 	 */
 	var lastlog pq.NullTime
-	/* Name may be null, but we've fine converting that to an empty string. */
+	/* Name may be null, but we're fine converting that to an empty string. */
 	var name sql.NullString
 	var err error = rows.Scan(&u.Id, &u.Email, &name, &u.Role, &lastlog,
 		&u.CreationDate)
@@ -115,16 +115,12 @@ func FetchUsers(filter *defs.ItemFilter) (*[]defs.User, error) {
 		/* Add it to our list. */
 		users = append(users, *user)
 	}
-	err = rows.Err()
-	if err != nil {
-		return nil, err
-	}
-	return &users, nil
+	return &users, rows.Err()
 }
 
 /*
- * Take a reference to a User and create it in the database, returning fields
- * in the passed object. Only User.Email and User.Role are read.
+ * Take a reference to a User and create it in the database, returning the new
+ * user. Only User.Email and User.Role are read.
  */
 func CreateUser(user *defs.User) (*defs.User, error) {
 	var rows *sql.Rows
@@ -142,11 +138,7 @@ func CreateUser(user *defs.User) (*defs.User, error) {
 		return nil, sql.ErrNoRows
 	}
 	/* Scan it in. */
-	user, err = scan_user(rows)
-	if err != nil {
-		return nil, err
-	}
-	return user, nil
+	return scan_user(rows)
 }
 
 /* Take a reference to a User and update it in the database, returning fields
@@ -170,21 +162,14 @@ func UpdateUser(id uint32, user *defs.User) (*defs.User, error) {
 		return nil, sql.ErrNoRows
 	}
 	/* Scan it in. */
-	user, err = scan_user(rows)
-	if err != nil {
-		return nil, err
-	}
-	return user, nil
+	return scan_user(rows)
 }
 
 /* Delete a User by id. */
 func DeleteUser(id uint32) error {
 	var err error
 	_, err = DB.Exec(`DELETE FROM users WHERE id = $1`, id)
-	if err != nil {
-		return err
-	}
-	return nil
+    return err
 }
 
 /* Destroy a login token. */
@@ -194,10 +179,7 @@ func UserLogout(token string) error {
                 (NULL, CURRENT_TIMESTAMP)
             WHERE token = $1`,
 		token)
-	if err != nil {
-		return err
-	}
-	return nil
+    return err
 }
 
 /* Record Google login by updating name, token, and lastlog. */
@@ -220,10 +202,7 @@ func GoogleLogin(email string, name string, token string) (*defs.User, error) {
 	/* Scan it in. */
 	var user *defs.User
 	user, err = scan_user(rows)
-	if err != nil {
-		return nil, err
-	}
-	return user, nil
+	return user, err
 }
 
 func FetchUserByToken(token string) (*defs.User, error) {
@@ -241,8 +220,5 @@ func FetchUserByToken(token string) (*defs.User, error) {
 	/* Scan it in. */
 	var user *defs.User
 	user, err = scan_user(rows)
-	if err != nil {
-		return nil, err
-	}
-	return user, nil
+	return user, err
 }

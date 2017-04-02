@@ -3,7 +3,7 @@
  * This code is under the BSD-2-Clause license.
  *
  * This is the config file for the application. It must be copied to
- * src/config/config.go and modified.
+ * config/config.go and modified.
  */
 package config
 
