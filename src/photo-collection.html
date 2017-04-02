@@ -88,13 +88,16 @@
             <template is="dom-if" if="[[albumName]]">
                 <template is="dom-repeat" items="[[photos]]">
                     <photo-display photo="[[item]]" album
-                            on-set-album-image="set_album_image">
+                            on-set-album-image="set_album_image"
+                            on-expand-photo="show_big_thumbnail">
                     </photo-display>
                 </template>
             </template>
             <template is="dom-if" if="[[!albumName]]">
                 <template is="dom-repeat" items="[[photos]]">
-                    <photo-display photo="[[item]]"></photo-display>
+                    <photo-display photo="[[item]]"
+                            on-expand-photo="show_big_thumbnail">
+                    </photo-display>
                 </template>
             </template>
         </div>
@@ -161,7 +164,17 @@
                 this.item_to_edit.cover_image_id = photo_id;
                 this.$$("#put_ajax").generateRequest();
             },
-
+            // Opens the big thumbnail display.
+            show_big_thumbnail: function(e, photo_id) {
+                // Ask for the big thumbnail display to be opened.
+                this.fire("iron-signal", { name: "open-form",
+                    data: {
+                        name: "expand_photo_form",
+                        photoId: photo_id,
+                        photoList: this.photos,
+                    },
+                });
+            },
         })
     </script>
 </dom-module>

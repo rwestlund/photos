@@ -53,7 +53,8 @@
                 </template>
                 <paper-spinner active="[[loading]]"></paper-spinner>
             </template>
-            <iron-image src="/api/photos/[[photo.id]]/thumbnail" preload fade>
+            <iron-image src="/api/photos/[[photo.id]]/thumbnail" preload fade
+                        on-tap="display_big_photo">
             </iron-image>
             <p>[[photo.caption]]</p>
             <p class="album_list">
@@ -120,7 +121,11 @@
             set_album_image: function() {
                 this.fire("set-album-image", this.photo.id);
             },
-
+            // Opens the big thumbnail display.
+            display_big_photo: function() {
+                // Ask for the big thumbnail display to be opened.
+                this.fire("expand-photo", this.photo.id);
+            },
         })
     </script>
 </dom-module>
