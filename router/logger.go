@@ -13,15 +13,15 @@ import (
 	"time"
 )
 
-/* Add logging functionality to HTTP requests. */
+// Logger adds logging functionality to HTTP requests.
 func Logger(inner http.Handler, name string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		/* Mark time at which request was received. */
-		var start time.Time = time.Now()
-		/* Handle request. */
+		// Mark time at which request was received.
+		var start = time.Now()
+		// Handle request.
 		inner.ServeHTTP(w, r)
 
-		/* Log request with time elapsed. */
+		// Log request with time elapsed.
 		log.Printf(
 			"%s\t%s\t%s\t%s",
 			r.Method,

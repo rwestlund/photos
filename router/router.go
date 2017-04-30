@@ -8,17 +8,18 @@
 package router
 
 import (
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
-/* Build a router by iterating over all routes. */
+// NewRouter builds a router by iterating over all routes.
 func NewRouter() *mux.Router {
 	router := mux.NewRouter()
 
 	for _, route := range routes {
-		/* Wrap handler in logger from logger.go. */
+		// Wrap handler in logger from logger.go.
 		var handler http.Handler = Logger(route.handler, route.name)
 
 		router.
@@ -28,27 +29,23 @@ func NewRouter() *mux.Router {
 			Handler(handler)
 	}
 
-	/*
-	 * If any client routes fall through to the server, such as during page
-	 * refresh, send the application back.
-	 */
+	// If any client routes fall through to the server, such as during page
+	// refresh, send the application back.
 	router.
 		Methods("GET", "HEAD").
 		PathPrefix("/{path:(albums|about|users|uploads)}/").
 		Name("path").
 		Handler(Logger(ServeIndex, "path"))
 
-	/* Add route to handle static files. */
+	// Add route to handle static files.
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./build/unbundled")))
 
 	return router
 }
 
-/*
- * Manually reply with the index / homepage. This is used to support
- * client-side refresh without a hash in the URL.
- */
-var ServeIndex http.HandlerFunc = http.HandlerFunc(func(res http.ResponseWriter,
+// ServeIndex manually replies with the index / homepage. This is used to
+// support client-side refresh without a hash in the URL.
+var ServeIndex = http.HandlerFunc(func(res http.ResponseWriter,
 	req *http.Request) {
 	log.Println("serving index!")
 	http.ServeFile(res, req, "./build/unbundled/index.html")

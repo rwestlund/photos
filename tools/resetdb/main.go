@@ -2,21 +2,21 @@
  * Copyright (c) 2016, Randy Westlund and Jacqueline Kory Westlund.
  * All rights reserved.
  * This code is under the BSD-2-Clause license.
- *
- * Drop and recreate database objects. Used for testing and creating a new
- * deployment. Must be run after tools/createdb/main.go. Also serves as table
- * documentation.
  */
 
 package main
 
 import (
 	"database/sql"
+	"log"
+
 	_ "github.com/lib/pq"
 	"github.com/rwestlund/photos/config"
-	"log"
 )
 
+// main will drop and recreate database objects. Used for testing and creating a
+// new deployment. Must be run after tools/createdb/main.go. Also serves as
+// table documentation.
 func main() {
 	var db *sql.DB
 	var err error
@@ -33,14 +33,14 @@ func main() {
 	}
 
 	log.Println("dropping old objects")
-	wrap_sql(db, "DROP TABLE IF EXISTS photo_albums", nil)
-	wrap_sql(db, "DROP TABLE IF EXISTS albums", nil)
-	wrap_sql(db, "DROP TABLE IF EXISTS photos", nil)
-	wrap_sql(db, "DROP TABLE IF EXISTS users", nil)
+	wrapSQL(db, "DROP TABLE IF EXISTS photo_albums", nil)
+	wrapSQL(db, "DROP TABLE IF EXISTS albums", nil)
+	wrapSQL(db, "DROP TABLE IF EXISTS photos", nil)
+	wrapSQL(db, "DROP TABLE IF EXISTS users", nil)
 
 	log.Println("creating new objects")
 
-	wrap_sql(db, `CREATE TABLE users (
+	wrapSQL(db, `CREATE TABLE users (
         id              serial PRIMARY KEY,
         email           text NOT NULL,
         name            text,
@@ -50,7 +50,7 @@ func main() {
                             DEFAULT CURRENT_TIMESTAMP,
         lastlog         timestamp WITH TIME ZONE
     )`, nil)
-	wrap_sql(db, `CREATE TABLE photos (
+	wrapSQL(db, `CREATE TABLE photos (
         id          	serial PRIMARY KEY,
 		filename		text NOT NULL,
 		mimetype		text NOT NULL,
@@ -63,11 +63,11 @@ func main() {
 		thumbnail		bytea NOT NULL,
 		big_thumbnail	bytea NOT NULL
     )`, nil)
-	wrap_sql(db, `CREATE TABLE albums (
+	wrapSQL(db, `CREATE TABLE albums (
         name            text PRIMARY KEY,
 		cover_image_id	integer REFERENCES photos(id)
     )`, nil)
-	wrap_sql(db, `CREATE TABLE photo_albums (
+	wrapSQL(db, `CREATE TABLE photo_albums (
         photo_id	integer REFERENCES photos(id) ON DELETE CASCADE NOT NULL,
         album_name   	text REFERENCES albums(name) ON DELETE CASCADE
 						ON UPDATE CASCADE NOT NULL,
@@ -76,16 +76,16 @@ func main() {
 
 	log.Println("inserting default values")
 
-	/* Add the default admins listed in the config file to the users table. */
+	// Add the default admins listed in the config file to the users table.
 	for _, admin := range config.DefaultAdmins {
-		wrap_sql(db, `INSERT INTO users (email, role) VALUES ($1, $2)`,
+		wrapSQL(db, `INSERT INTO users (email, role) VALUES ($1, $2)`,
 			[]interface{}{admin, "Admin"})
 	}
 
 	log.Println("complete")
 }
 
-func wrap_sql(db *sql.DB, s string, params []interface{}) {
+func wrapSQL(db *sql.DB, s string, params []interface{}) {
 	_, err := db.Exec(s, params...)
 	if err != nil {
 		log.Println("error during:", s)

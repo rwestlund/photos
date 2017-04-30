@@ -3,31 +3,33 @@
  * This code is under the BSD-2-Clause license.
  *
  * This is the config file for the application. It must be copied to
- * config/config.go and modified.
+ * src/config/config.go and modified.
  */
+
 package config
 
-/* Format: [address]:port, passed to http.ListenAndServe(). */
-var ListenAddress string = ":3000"
+// ListenAddress should be in the format: [address]:port
+// It is passed to http.ListenAndServe().
+var ListenAddress = ":3000"
 
-/* Paramaters for connecting to a local PostgreSQL database. */
-var DatabaseUserName string = "photos"
-var DatabaseName string = "photos"
+// DatabaseUserName is the user for connecting to a local PostgreSQL database.
+var DatabaseUserName = "photos"
 
-/*
- * The following variables are used in OAuth, and must be set to your
- * deployment-specific values.
- */
+// DatabaseName is the name for connecting to a local PostgreSQL database.
+var DatabaseName = "photos"
 
-/* Google OAuth client id. */
-var OAuthClientID string = your value here!
+// The following variables are used in OAuth, and must be set to your
+// deployment-specific values.
 
-/* Google OAuth client secret. */
-var OAuthClientSecret string = your value here!
+// OAuthClientID is the Google OAuth client id.
+var OAuthClientID = your value here!
 
-/* The hostname in the URL where this server can be found. */
-var LocalHostName string = "photos.textplain.net"
+// OAuthClientSecret is the Google OAuth client secret.
+var OAuthClientSecret = your value here!
 
-/* These users will be added as admins during resetdb. */
-var DefaultAdmins []string = []string{"jacqueline.kory@gmail.com",
+// LocalHostName is the hostname in the URL where this server can be found.
+var LocalHostName = "photos.textplain.net"
+
+// DefaultAdmins contains users who will be added as admins during resetdb.
+var DefaultAdmins = []string{"jacqueline.kory@gmail.com",
 	"rwestlun@gmail.com"}

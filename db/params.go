@@ -5,20 +5,24 @@
  * This file connects to the database and exposes the handle to the other DB
  * files.
  */
+
 package db
 
 import (
 	"database/sql"
+	"log"
+
+	// Import the postgres driver.
 	_ "github.com/lib/pq"
 	"github.com/rwestlund/photos/config"
-	"log"
 )
 
-/* Make db handle global to this package. */
+// DB is the db handle for this package.
 var DB *sql.DB
 
+// Init connects to the database.
 func Init() {
-	/* Connect to database. */
+	// Connect to database.
 	var err error
 	DB, err = sql.Open("postgres", "user="+config.DatabaseUserName+
 		" dbname="+config.DatabaseName+" sslmode=disable")

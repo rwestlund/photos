@@ -11,10 +11,6 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/json"
-	"github.com/gorilla/mux"
-	"github.com/nfnt/resize"
-	"github.com/rwestlund/photos/db"
-	"github.com/rwestlund/photos/defs"
 	"image"
 	"image/jpeg"
 	"image/png"
@@ -23,18 +19,21 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+
+	"github.com/gorilla/mux"
+	"github.com/nfnt/resize"
+	"github.com/rwestlund/photos/db"
+	"github.com/rwestlund/photos/defs"
 )
 
-/*
- * Take a url.URL object (from req.URL) and fill an ItemFilter.
- */
-func build_item_filter(url *url.URL) *defs.ItemFilter {
-	/* We can ignore the error because count=0 means disabled. */
+// buildItemFilder takes a url.URL object from req.URL and fills an ItemFilter.
+func buildItemFilter(url *url.URL) *defs.ItemFilter {
+	// We can ignore the error because count=0 means disabled.
 	var bigcount uint64
 	bigcount, _ = strconv.ParseUint(url.Query().Get("count"), 10, 32)
 	var bigskip uint64
 	bigskip, _ = strconv.ParseUint(url.Query().Get("skip"), 10, 32)
-	/* Build ItemFilter from query params. */
+	// Build ItemFilter from query params.
 	var filter defs.ItemFilter = defs.ItemFilter{
 		Query: url.Query().Get("query"),
 		Count: uint32(bigcount),
@@ -44,14 +43,12 @@ func build_item_filter(url *url.URL) *defs.ItemFilter {
 	return &filter
 }
 
-/*
- * Request a list of photos.
- * GET /api/photos
- */
-func handle_photos(res http.ResponseWriter, req *http.Request) {
+// handlePhotos requests a list of photos.
+// GET /api/photos
+func handlePhotos(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-	var filter = build_item_filter(req.URL)
+	var filter = buildItemFilter(req.URL)
 
 	var photos *[]defs.Photo
 	var err error
@@ -67,19 +64,17 @@ func handle_photos(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(500)
 		return
 	}
-	/* If we made it here, send good response. */
+	// If we made it here, send good response.
 	res.Write(j)
 }
 
-/*
- * Update an existing photo.
- * PUT /api/photos/4
- */
-func handle_put_photo(res http.ResponseWriter, req *http.Request) {
-	/* Access control. */
+// handlePutPhoto updates an existing photo.
+// PUT /api/photos/4
+func handlePutPhoto(res http.ResponseWriter, req *http.Request) {
+	// Access control.
 	var usr *defs.User
 	var err error
-	usr, err = check_auth(res, req)
+	usr, err = checkAuth(res, req)
 	if err != nil {
 		res.WriteHeader(500)
 		log.Println(err)
@@ -96,7 +91,7 @@ func handle_put_photo(res http.ResponseWriter, req *http.Request) {
 
 	res.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-	/* Decode body. */
+	// Decode body.
 	var photo defs.Photo
 	err = json.NewDecoder(req.Body).Decode(&photo)
 	if err != nil {
@@ -105,10 +100,10 @@ func handle_put_photo(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	var new_photo *defs.Photo
+	var newPhoto *defs.Photo
 
-	/* Update it. */
-	new_photo, err = db.SavePhoto(&photo)
+	// Update it.
+	newPhoto, err = db.SavePhoto(&photo)
 	if err == sql.ErrNoRows {
 		res.WriteHeader(404)
 		return
@@ -119,26 +114,24 @@ func handle_put_photo(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	/* Send it back. */
-	j, e := json.Marshal(new_photo)
+	// Send it back.
+	j, e := json.Marshal(newPhoto)
 	if e != nil {
 		log.Println(e)
 		res.WriteHeader(500)
 		return
 	}
-	/* If we made it here, send good response. */
+	// If we made it here, send good response.
 	res.Write(j)
 }
 
-/*
- * Create a new photo.
- * POST /api/photos
- */
-func handle_post_photo(res http.ResponseWriter, req *http.Request) {
-	/* Access control. */
+// handlePostPhoto creates a new photo.
+// POST /api/photos
+func handlePostPhoto(res http.ResponseWriter, req *http.Request) {
+	// Access control.
 	var err error
 	var usr *defs.User
-	usr, err = check_auth(res, req)
+	usr, err = checkAuth(res, req)
 	if err != nil {
 		res.WriteHeader(500)
 		log.Println(err)
@@ -155,7 +148,7 @@ func handle_post_photo(res http.ResponseWriter, req *http.Request) {
 
 	res.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-	/* Hold the first 200MB in RAM; the rest goes to temporary files. */
+	// Hold the first 200MB in RAM; the rest goes to temporary files.
 	err = req.ParseMultipartForm(200 * 1024 * 1024)
 	if err != nil {
 		log.Println(err)
@@ -172,38 +165,38 @@ func handle_post_photo(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	/* Decode body. */
+	// Decode body.
 	var photo defs.Photo
 	photo.Filename = header.Filename
 	photo.Mimetype = header.Header.Get("Content-Type")
 
-	/* Full size image. */
-	var photo_buff bytes.Buffer
-	photo.Size, err = photo_buff.ReadFrom(file)
+	// Full size image.
+	var photoBuff bytes.Buffer
+	photo.Size, err = photoBuff.ReadFrom(file)
 
-	/* Create thumbnails. */
+	// Create thumbnails.
 	var img image.Image
-	var img_type string
-	img, img_type, err = image.Decode(&photo_buff)
+	var imgType string
+	img, imgType, err = image.Decode(&photoBuff)
 	if err != nil {
 		log.Println(err)
 		res.WriteHeader(400)
 		return
 	}
-	/* Create small thumbnail. */
+	// Create small thumbnail.
 	var thumb image.Image = resize.Thumbnail(800, 800, img, resize.Lanczos3)
 
-	/* Create big thumbnail. */
-	var big_thumb image.Image = resize.Thumbnail(1600, 1600, img, resize.Lanczos3)
+	// Create big thumbnail.
+	var bigThumb image.Image = resize.Thumbnail(1600, 1600, img, resize.Lanczos3)
 
-	/* Put thumbnail into a byte arrays for the database. */
-	var thumb_buff bytes.Buffer
-	if img_type == "jpeg" {
-		err = jpeg.Encode(&thumb_buff, thumb, nil)
-	} else if img_type == "png" {
-		err = png.Encode(&thumb_buff, thumb)
+	// Put thumbnail into a byte arrays for the database.
+	var thumbBuff bytes.Buffer
+	if imgType == "jpeg" {
+		err = jpeg.Encode(&thumbBuff, thumb, nil)
+	} else if imgType == "png" {
+		err = png.Encode(&thumbBuff, thumb)
 	} else {
-		log.Println("Unsupported image type: " + img_type)
+		log.Println("Unsupported image type: " + imgType)
 		res.WriteHeader(400)
 		return
 	}
@@ -212,14 +205,14 @@ func handle_post_photo(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(400)
 		return
 	}
-	/* Put big thumbnail into a byte array for the database. */
-	var big_thumb_buff bytes.Buffer
-	if img_type == "jpeg" {
-		err = jpeg.Encode(&big_thumb_buff, big_thumb, nil)
-	} else if img_type == "png" {
-		err = png.Encode(&big_thumb_buff, big_thumb)
+	// Put big thumbnail into a byte array for the database.
+	var bigThumbBuff bytes.Buffer
+	if imgType == "jpeg" {
+		err = jpeg.Encode(&bigThumbBuff, bigThumb, nil)
+	} else if imgType == "png" {
+		err = png.Encode(&bigThumbBuff, bigThumb)
 	} else {
-		log.Println("Unsupported image type: " + img_type)
+		log.Println("Unsupported image type: " + imgType)
 		res.WriteHeader(400)
 		return
 	}
@@ -229,19 +222,19 @@ func handle_post_photo(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	/* Add albums */
-	var albums_string string = req.FormValue("albums")
-	err = json.Unmarshal([]byte(albums_string), &photo.Albums)
+	// Add albums
+	var albumsString = req.FormValue("albums")
+	err = json.Unmarshal([]byte(albumsString), &photo.Albums)
 	if err != nil {
 		log.Println(err)
 		log.Println(photo.Albums)
 	}
 
-	var new_photo *defs.Photo
-	/* Fill in the currently logged-in user as the author. */
-	photo.AuthorId = usr.Id
-	new_photo, err = db.CreatePhoto(&photo, photo_buff.Bytes(),
-		thumb_buff.Bytes(), big_thumb_buff.Bytes())
+	var newPhoto *defs.Photo
+	// Fill in the currently logged-in user as the author.
+	photo.AuthorID = usr.ID
+	newPhoto, err = db.CreatePhoto(&photo, photoBuff.Bytes(),
+		thumbBuff.Bytes(), bigThumbBuff.Bytes())
 
 	if err != nil {
 		log.Println(err)
@@ -249,25 +242,23 @@ func handle_post_photo(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	/* Send it back. */
-	j, e := json.Marshal(new_photo)
+	// Send it back.
+	j, e := json.Marshal(newPhoto)
 	if e != nil {
 		log.Println(e)
 		res.WriteHeader(500)
 		return
 	}
-	/* If we made it here, send good response. */
+	// If we made it here, send good response.
 	res.Write(j)
 }
 
-/*
- * Request a specific photo.
- * GET /api/photo/3
- */
-func handle_photo(res http.ResponseWriter, req *http.Request) {
+// handlePhoto requests a specific photo.
+// GET /api/photo/3
+func handlePhoto(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-	/* Get id parameter. */
+	// Get id parameter.
 	var params map[string]string = mux.Vars(req)
 	bigid, err := strconv.ParseUint(params["id"], 10, 32)
 	if err != nil {
@@ -275,7 +266,7 @@ func handle_photo(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(400)
 		return
 	}
-	var id uint32 = uint32(bigid)
+	var id = uint32(bigid)
 
 	var photo *defs.Photo
 	photo, err = db.FetchPhoto(id)
@@ -294,18 +285,16 @@ func handle_photo(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	/* If we made it here, send good response. */
+	// If we made it here, send good response.
 	res.Write(j)
 }
 
-/*
- * Request a specific photo.
- * GET /api/photo/3/image
- */
-func handle_photo_image(res http.ResponseWriter, req *http.Request) {
+// handlePhotoImage requests a specific photo image.
+// GET /api/photo/3/image
+func handlePhotoImage(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/binary")
 
-	/* Get id parameter. */
+	// Get id parameter.
 	var params map[string]string = mux.Vars(req)
 	bigid, err := strconv.ParseUint(params["id"], 10, 32)
 	if err != nil {
@@ -313,7 +302,7 @@ func handle_photo_image(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(400)
 		return
 	}
-	var id uint32 = uint32(bigid)
+	var id = uint32(bigid)
 
 	var image []byte
 	image, err = db.FetchPhotoImage(id)
@@ -326,18 +315,16 @@ func handle_photo_image(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	/* If we made it here, send good response. */
+	// If we made it here, send good response.
 	res.Write(image)
 }
 
-/*
- * Request a specific photo thumbnail.
- * GET /api/photo/3/thumbnail
- */
-func handle_photo_thumbnail(res http.ResponseWriter, req *http.Request) {
+// handlePhotoThumbnail requests a specific photo.
+// GET /api/photo/3/thumbnail
+func handlePhotoThumbnail(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/binary")
 
-	/* Get id parameter. */
+	// Get id parameter.
 	var params map[string]string = mux.Vars(req)
 	bigid, err := strconv.ParseUint(params["id"], 10, 32)
 	if err != nil {
@@ -345,7 +332,7 @@ func handle_photo_thumbnail(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(400)
 		return
 	}
-	var id uint32 = uint32(bigid)
+	var id = uint32(bigid)
 
 	var image []byte
 	image, err = db.FetchPhotoThumbnail(id)
@@ -358,18 +345,16 @@ func handle_photo_thumbnail(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	/* If we made it here, send good response. */
+	// If we made it here, send good response.
 	res.Write(image)
 }
 
-/*
- * Request a specific photo's big thumbnail.
- * GET /api/photo/3/big_thumbnail
- */
-func handle_photo_big_thumbnail(res http.ResponseWriter, req *http.Request) {
+// handlePhotoBigThumbnail requests a specific photo's big thumbnail.
+// GET /api/photo/3/big_thumbnail
+func handlePhotoBigThumbnail(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/binary")
 
-	/* Get id parameter. */
+	// Get id parameter.
 	var params map[string]string = mux.Vars(req)
 	bigid, err := strconv.ParseUint(params["id"], 10, 32)
 	if err != nil {
@@ -377,7 +362,7 @@ func handle_photo_big_thumbnail(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(400)
 		return
 	}
-	var id uint32 = uint32(bigid)
+	var id = uint32(bigid)
 
 	var image []byte
 	image, err = db.FetchPhotoBigThumbnail(id)
@@ -390,19 +375,17 @@ func handle_photo_big_thumbnail(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	/* If we made it here, send good response. */
+	// If we made it here, send good response.
 	res.Write(image)
 }
 
-/*
- * Delete a photo by id.
- * DELETE /api/photos/4
- */
-func handle_delete_photo(res http.ResponseWriter, req *http.Request) {
-	/* Access control. */
+// handleDeletePhoto deletes a photo by id.
+// DELETE /api/photos/4
+func handleDeletePhoto(res http.ResponseWriter, req *http.Request) {
+	// Access control.
 	var usr *defs.User
 	var err error
-	usr, err = check_auth(res, req)
+	usr, err = checkAuth(res, req)
 	if err != nil {
 		res.WriteHeader(500)
 		log.Println(err)
@@ -419,7 +402,7 @@ func handle_delete_photo(res http.ResponseWriter, req *http.Request) {
 
 	res.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-	/* Get id parameter. */
+	// Get id parameter.
 	var params map[string]string = mux.Vars(req)
 	var bigid uint64
 	bigid, err = strconv.ParseUint(params["id"], 10, 32)
@@ -428,9 +411,9 @@ func handle_delete_photo(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(400)
 		return
 	}
-	var photo_id uint32 = uint32(bigid)
+	var photoID = uint32(bigid)
 
-	err = db.DeletePhoto(photo_id)
+	err = db.DeletePhoto(photoID)
 	if err == sql.ErrNoRows {
 		res.WriteHeader(404)
 		return
@@ -440,19 +423,17 @@ func handle_delete_photo(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(400)
 		return
 	}
-	/* If we made it here, send good response. */
+	// If we made it here, send good response.
 	res.WriteHeader(200)
 }
 
-/*
- * Request a list of users.
- * GET /api/users
- */
-func handle_users(res http.ResponseWriter, req *http.Request) {
-	/* Access control. */
+// handleUsers requests a list of users.
+// GET /api/users
+func handleUsers(res http.ResponseWriter, req *http.Request) {
+	// Access control.
 	var usr *defs.User
 	var err error
-	usr, err = check_auth(res, req)
+	usr, err = checkAuth(res, req)
 	if err != nil {
 		res.WriteHeader(500)
 		log.Println(err)
@@ -469,7 +450,7 @@ func handle_users(res http.ResponseWriter, req *http.Request) {
 
 	res.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-	var filter = build_item_filter(req.URL)
+	var filter = buildItemFilter(req.URL)
 
 	var users *[]defs.User
 	users, err = db.FetchUsers(filter)
@@ -484,20 +465,18 @@ func handle_users(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(500)
 		return
 	}
-	/* If we made it here, send good response. */
+	// If we made it here, send good response.
 	res.Write(j)
 }
 
-/*
- * Receive a new user to create.
- * POST /api/users or PUT /api/users/4
- * Example: { email: ..., role: ... }
- */
-func handle_post_or_put_user(res http.ResponseWriter, req *http.Request) {
-	/* Access control. */
+// handlePostOrPutUser receive a new user to create.
+// POST /api/users or PUT /api/users/4
+// Example: { email: ..., role: ... }
+func handlePostOrPutUser(res http.ResponseWriter, req *http.Request) {
+	// Access control.
 	var usr *defs.User
 	var err error
-	usr, err = check_auth(res, req)
+	usr, err = checkAuth(res, req)
 	if err != nil {
 		res.WriteHeader(500)
 		log.Println(err)
@@ -514,7 +493,7 @@ func handle_post_or_put_user(res http.ResponseWriter, req *http.Request) {
 
 	res.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-	/* Decode body. */
+	// Decode body.
 	var user defs.User
 	err = json.NewDecoder(req.Body).Decode(&user)
 	if err != nil {
@@ -523,10 +502,10 @@ func handle_post_or_put_user(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	var new_user *defs.User
-	/* Update a user in the database. */
+	var newUser *defs.User
+	// Update a user in the database.
 	if req.Method == "PUT" {
-		/* Get id parameter. */
+		// Get id parameter.
 		var params map[string]string = mux.Vars(req)
 		bigid, err := strconv.ParseUint(params["id"], 10, 32)
 		if err != nil {
@@ -534,12 +513,12 @@ func handle_post_or_put_user(res http.ResponseWriter, req *http.Request) {
 			res.WriteHeader(400)
 			return
 		}
-		var id uint32 = uint32(bigid)
+		var id = uint32(bigid)
 
-		new_user, err = db.UpdateUser(id, &user)
-		/* Create new user in DB. */
+		newUser, err = db.UpdateUser(id, &user)
+		// Create new user in DB.
 	} else {
-		new_user, err = db.CreateUser(&user)
+		newUser, err = db.CreateUser(&user)
 	}
 
 	if err != nil {
@@ -548,26 +527,24 @@ func handle_post_or_put_user(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	/* Send it back. */
-	j, e := json.Marshal(new_user)
+	// Send it back.
+	j, e := json.Marshal(newUser)
 	if e != nil {
 		log.Println(e)
 		res.WriteHeader(500)
 		return
 	}
-	/* If we made it here, send good response. */
+	// If we made it here, send good response.
 	res.Write(j)
 }
 
-/*
- * Delete a user by id.
- * DELETE /api/users/4
- */
-func handle_delete_user(res http.ResponseWriter, req *http.Request) {
-	/* Access control. */
+// handleDeleteUser deletes a user by id.
+// DELETE /api/users/4
+func handleDeleteUser(res http.ResponseWriter, req *http.Request) {
+	// Access control.
 	var usr *defs.User
 	var err error
-	usr, err = check_auth(res, req)
+	usr, err = checkAuth(res, req)
 	if err != nil {
 		res.WriteHeader(500)
 		log.Println(err)
@@ -584,7 +561,7 @@ func handle_delete_user(res http.ResponseWriter, req *http.Request) {
 
 	res.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-	/* Get id parameter. */
+	// Get id parameter.
 	var params map[string]string = mux.Vars(req)
 	var bigid uint64
 	bigid, err = strconv.ParseUint(params["id"], 10, 32)
@@ -593,7 +570,7 @@ func handle_delete_user(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(400)
 		return
 	}
-	var id uint32 = uint32(bigid)
+	var id = uint32(bigid)
 
 	err = db.DeleteUser(id)
 
@@ -603,11 +580,11 @@ func handle_delete_user(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	/* If we made it here, send good response. */
+	// If we made it here, send good response.
 	res.WriteHeader(200)
 }
 
-func handle_get_albums(res http.ResponseWriter, req *http.Request) {
+func handleGetAlbums(res http.ResponseWriter, req *http.Request) {
 	var albums *[]defs.Album
 	var err error
 	albums, err = db.FetchAlbums()
@@ -622,16 +599,16 @@ func handle_get_albums(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(500)
 		return
 	}
-	/* If we made it here, send good response. */
+	// If we made it here, send good response.
 	res.Write(j)
 }
 
-func handle_get_album(res http.ResponseWriter, req *http.Request) {
+func handleGetAlbum(res http.ResponseWriter, req *http.Request) {
 	var album *defs.Album
 	var err error
-	/* Get name parameter. */
+	// Get name parameter.
 	var params map[string]string = mux.Vars(req)
-	album, err = db.FetchAlbum(params["album_name"])
+	album, err = db.FetchAlbum(params["albumName"])
 	if err == sql.ErrNoRows {
 		res.WriteHeader(404)
 		return
@@ -647,15 +624,15 @@ func handle_get_album(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(500)
 		return
 	}
-	/* If we made it here, send good response. */
+	// If we made it here, send good response.
 	res.Write(j)
 }
 
-func handle_post_albums(res http.ResponseWriter, req *http.Request) {
-	/* Access control. */
+func handlePostAlbums(res http.ResponseWriter, req *http.Request) {
+	// Access control.
 	var usr *defs.User
 	var err error
-	usr, err = check_auth(res, req)
+	usr, err = checkAuth(res, req)
 	if err != nil {
 		res.WriteHeader(500)
 		log.Println(err)
@@ -672,7 +649,7 @@ func handle_post_albums(res http.ResponseWriter, req *http.Request) {
 
 	res.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-	/* Decode body. */
+	// Decode body.
 	var album defs.Album
 	err = json.NewDecoder(req.Body).Decode(&album)
 	if err != nil {
@@ -681,31 +658,32 @@ func handle_post_albums(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	var new_album *defs.Album
-	/* Create new album in DB. */
-	new_album, err = db.CreateAlbum(&album)
+	var newAlbum *defs.Album
+	// Create new album in DB.
+	newAlbum, err = db.CreateAlbum(&album)
 	if err != nil {
 		log.Println(err)
 		res.WriteHeader(400)
 		return
 	}
 
-	/* Send it back. */
-	j, e := json.Marshal(new_album)
+	// Send it back.
+	j, e := json.Marshal(newAlbum)
 	if e != nil {
 		log.Println(e)
 		res.WriteHeader(500)
 		return
 	}
-	/* If we made it here, send good response. */
+	// If we made it here, send good response.
 	res.Write(j)
 }
 
-func handle_put_albums(res http.ResponseWriter, req *http.Request) {
-	/* Access control. */
+// handlePutAlbums
+func handlePutAlbums(res http.ResponseWriter, req *http.Request) {
+	// Access control.
 	var usr *defs.User
 	var err error
-	usr, err = check_auth(res, req)
+	usr, err = checkAuth(res, req)
 	if err != nil {
 		res.WriteHeader(500)
 		log.Println(err)
@@ -722,7 +700,7 @@ func handle_put_albums(res http.ResponseWriter, req *http.Request) {
 
 	res.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-	/* Decode body. */
+	// Decode body.
 	var album defs.Album
 	err = json.NewDecoder(req.Body).Decode(&album)
 	if err != nil {
@@ -731,11 +709,11 @@ func handle_put_albums(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	var new_album *defs.Album
-	/* Update an album in the database. */
-	/* Get name parameter. */
+	var newAlbum *defs.Album
+	// Update an album in the database.
+	// Get name parameter.
 	var params map[string]string = mux.Vars(req)
-	new_album, err = db.UpdateAlbum(params["name"], &album)
+	newAlbum, err = db.UpdateAlbum(params["name"], &album)
 
 	if err != nil {
 		log.Println(err)
@@ -743,14 +721,14 @@ func handle_put_albums(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	/* Send it back. */
-	j, e := json.Marshal(new_album)
+	// Send it back.
+	j, e := json.Marshal(newAlbum)
 	if e != nil {
 		log.Println(e)
 		res.WriteHeader(500)
 		return
 	}
-	/* If we made it here, send good response. */
+	// If we made it here, send good response.
 	res.Write(j)
 
 }

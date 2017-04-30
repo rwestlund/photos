@@ -1,24 +1,24 @@
 /*
  * Copyright (c) 2016, Randy Westlund. All rights reserved.
  * This code is under the BSD-2-Clause license.
- *
- * Drop and recreate database and users. This should only be run once per
- * deployment, just to initialize things. Run tools/resetdb/main.go next.
  */
 
 package main
 
 import (
 	"database/sql"
+	"log"
+
 	_ "github.com/lib/pq"
 	"github.com/rwestlund/photos/config"
-	"log"
 )
 
+// main will drop and recreate database and users. This should only be run once
+// per deployment, just to initialize things. Run tools/resetdb/main.go next.
 func main() {
 	var db *sql.DB
 	var err error
-	/* This should be the superuser. */
+	// This should be the superuser.
 	db, err = sql.Open("postgres",
 		"user=postgres dbname=postgres sslmode=disable")
 	if err != nil {
@@ -32,16 +32,16 @@ func main() {
 	}
 
 	log.Println("removing old database")
-	wrap_sql(db, "DROP DATABASE IF EXISTS "+config.DatabaseName)
-	wrap_sql(db, "DROP USER IF EXISTS "+config.DatabaseUserName)
+	wrapSQL(db, "DROP DATABASE IF EXISTS "+config.DatabaseName)
+	wrapSQL(db, "DROP USER IF EXISTS "+config.DatabaseUserName)
 	log.Println("creating new database")
-	wrap_sql(db, "CREATE USER "+config.DatabaseUserName+" WITH LOGIN")
-	wrap_sql(db, "CREATE DATABASE "+config.DatabaseName+" WITH OWNER "+
+	wrapSQL(db, "CREATE USER "+config.DatabaseUserName+" WITH LOGIN")
+	wrapSQL(db, "CREATE DATABASE "+config.DatabaseName+" WITH OWNER "+
 		config.DatabaseUserName)
 	log.Println("complete")
 }
 
-func wrap_sql(db *sql.DB, s string) {
+func wrapSQL(db *sql.DB, s string) {
 	_, err := db.Exec(s)
 	if err != nil {
 		log.Println("error during:", s)
