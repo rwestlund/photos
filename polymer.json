@@ -4,7 +4,16 @@
     "sources": [
         "src/**/*"
     ],
-    "includeDependencies": [
+    "extraDependencies": [
         "bower_components/webcomponentsjs/webcomponents-lite.js"
-    ]
+    ],
+    "lint": {
+        "rules": ["polymer-2-hybrid"]
+    },
+    "builds": [{
+        "addServiceWorker": false,
+        "html": { "minify": true },
+        "css": { "minify": true },
+        "js": { "minify": false, "does true break polymer?": "yes :(" }
+    }]
 }
