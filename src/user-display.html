@@ -5,7 +5,19 @@
 -->
 <!-- This module shows a user card. -->
 
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="../bower_components/polymer/polymer.html">
+
+<link rel="import" href="global-behavior.html">
+<link rel="import" href="global-styles.html">
 
 <dom-module id="user-display">
     <template>
@@ -112,7 +124,6 @@
                 <paper-button raised dialog-confirm>Delete</paper-button>
             </div>
         </paper-dialog>
-
     </template>
 
     <script>

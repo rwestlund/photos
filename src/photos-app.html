@@ -1,5 +1,5 @@
 <!--
-    Copyright (c) 2016-2-17, Randy Westlund and Jacqueline Kory Westlund.
+    Copyright (c) 2016-2017, Randy Westlund and Jacqueline Kory Westlund.
     All rights reserved.
     This code is under the BSD-2-Clause license.
 -->
@@ -8,53 +8,25 @@
 <link rel="import" href="../bower_components/app-layout/app-layout.html">
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
-<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
-<link rel="import" href="../bower_components/iron-icons/image-icons.html">
-<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
-<link rel="import" href="../bower_components/iron-icons/social-icons.html">
-<link rel="import" href="../bower_components/iron-icons/maps-icons.html">
-<link rel="import" href="../bower_components/iron-icons/hardware-icons.html">
-<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
-<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
-<link rel="import" href="../bower_components/paper-material/paper-material.html">
-<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
-<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
-<link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../bower_components/iron-image/iron-image.html">
-<link rel="import" href="../bower_components/iron-overlay-behavior/iron-overlay-behavior.html">
-<link rel="import" href="../bower_components/iron-signals/iron-signals.html">
-<link rel="import" href="../bower_components/app-layout/app-grid/app-grid-style.html">
-<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/maps-icons.html">
+<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
 
-<!-- Third party components. -->
-<link rel="import" href="../bower_components/polymer-responsive-dialog/responsive-dialog.html">
-
-<!-- Behaviors and styles must come before elements that use them. -->
-<link rel="import" href="form-behavior.html">
-<link rel="import" href="global-behavior.html">
-<link rel="import" href="global-styles.html">
-
-<!-- Custom elements. -->
-<link rel="import" href="photos-uploads.html">
-<link rel="import" href="photo-collection.html">
-<link rel="import" href="photo-display.html">
-<link rel="import" href="photos-forms.html">
-<link rel="import" href="photo-form.html">
-<link rel="import" href="expand-photo-form.html">
-<link rel="import" href="album-form.html">
-<link rel="import" href="select-album-form.html">
-<link rel="import" href="cookie-display.html">
 <link rel="import" href="album-collection.html">
+<link rel="import" href="cookie-display.html">
+<link rel="import" href="global-styles.html">
 <link rel="import" href="item-collection.html">
-<link rel="import" href="album-display.html">
-<link rel="import" href="user-display.html">
-<link rel="import" href="user-form.html">
+<link rel="import" href="photo-collection.html">
+<link rel="import" href="photos-uploads.html">
 
 <dom-module id="photos-app">
     <template>
@@ -339,15 +311,12 @@
             behaviors: [photo_behaviors.global_behavior],
             properties: {
             },
-
             ready: function() {
                 console.log("ready");
             },
-
             toggle_drawer: function() {
                 if (this.$.drawer_layout.narrow) this.$.drawer.toggle();
             },
-
             // Opens the create album modal.
             create_album: function() {
                 this.set('item_to_edit', {});
@@ -361,7 +330,6 @@
                     },
                 });
             },
-
             // Handle response from dialog. Reason is either confirmed or
             // canceled.
             resolve_create_album: function(e, reason) {
@@ -372,7 +340,6 @@
                 this.set("item_to_edit", tmp);
                 this.$.post_ajax.generateRequest();
             },
-
             post_item_successful: function() {
                 console.log("updated");
             },
@@ -389,7 +356,6 @@
                     default: return "Photos";
                 }
             },
-
         });
     </script>
 </dom-module>
