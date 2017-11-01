@@ -55,6 +55,14 @@
                 /* Make the drawer a little smaller than default. */
                 --app-drawer-width: 10em;
             }
+
+            app-drawer-layout:not([narrow]) [drawer-toggle] {
+                  display: none;
+            }
+            paper-listbox {
+                background-color: var(--medium-background-color);
+            }
+
             /* This applies to the main application title. */
             div[main-title] {
                 font-size: x-large;
@@ -135,7 +143,7 @@
 
         <!-- App drawer -->
         <app-drawer-layout id="drawer_layout" fullbleed responsive-width="900px">
-            <app-drawer id="drawer" swipe-open>
+            <app-drawer id="drawer" slot="drawer" swipe-open>
                 <app-toolbar></app-toolbar>
                 <paper-listbox selected="[[route_data.page]]"
                         attr-for-selected="name"
@@ -206,7 +214,7 @@
 
             <!-- App header -->
             <app-header-layout fullbleed>
-                <app-header fixed>
+                <app-header slot="header" fixed>
                     <app-toolbar>
                         <paper-icon-button class="header" icon="menu" drawer-toggle>
                         </paper-icon-button>
