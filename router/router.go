@@ -10,6 +10,7 @@ package router
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -17,36 +18,25 @@ import (
 // NewRouter builds a router by iterating over all routes.
 func NewRouter() *mux.Router {
 	router := mux.NewRouter()
+	var apiRouter = router.PathPrefix("/api/").Subrouter()
 
 	for _, route := range routes {
-		// Wrap handler in logger from logger.go.
-		var handler http.Handler = Logger(route.handler, route.name)
-
-		router.
+		apiRouter.
 			Methods(route.methods...).
 			Path(route.pattern).
-			Name(route.name).
-			Handler(handler)
+			Handler(logger(route.handler))
 	}
-
-	// If any client routes fall through to the server, such as during page
-	// refresh, send the application back.
-	router.
-		Methods("GET", "HEAD").
-		PathPrefix("/{path:(albums|about|users|uploads)}/").
-		Name("path").
-		Handler(Logger(ServeIndex, "path"))
-
-	// Add route to handle static files.
-	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./build/default")))
-
 	return router
 }
 
-// ServeIndex manually replies with the index / homepage. This is used to
-// support client-side refresh without a hash in the URL.
-var ServeIndex = http.HandlerFunc(func(res http.ResponseWriter,
-	req *http.Request) {
-	log.Println("serving index!")
-	http.ServeFile(res, req, "./build/default/index.html")
-})
+// logger adds logging functionality to HTTP requests.
+func logger(inner http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Mark time at which request was received.
+		var start = time.Now()
+		// Handle request.
+		inner.ServeHTTP(w, r)
+		// Log request with time elapsed.
+		log.Printf("%s\t%s\t%s", r.Method, r.RequestURI, time.Since(start))
+	})
+}

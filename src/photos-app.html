@@ -185,7 +185,7 @@
                 <hr>
                 <paper-listbox>
                 <template is="dom-if" if="[[!user_name]]">
-                    <a href="/auth/google/login">
+                    <a href="/api/auth/google/login">
                         <paper-item>
                             <iron-icon icon="icons:account-circle"></iron-icon>
                             Sign In
@@ -193,7 +193,7 @@
                     </a>
                 </template>
                 <template is="dom-if" if="[[user_name]]">
-                    <a href="/auth/logout">
+                    <a href="/api/auth/logout">
                         <paper-item>
                            <iron-icon icon="maps:directions-run"></iron-icon>
                            Logout
@@ -221,9 +221,9 @@
                     </app-toolbar>
                 </app-header>
 
-                <!-- Ignore /api/ and /auth/ routes; let the browser have them. This
+                <!-- Ignore /api/ and /s/ routes; let the browser have them. This
                      is also defined in sw-precache-config.js. -->
-                <app-location route="{{route}}" url-space-regex="^/(?!(api|auth)/)">
+                <app-location route="{{route}}" url-space-regex="^/(?!(api|s)/)">
                 </app-location>
                 <!-- The top-level router. -->
                 <app-route
