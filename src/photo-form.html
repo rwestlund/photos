@@ -11,8 +11,8 @@
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-styles/element-styles/paper-material-styles.html">
 <link rel="import" href="../bower_components/polymer-responsive-dialog/responsive-dialog.html">
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
@@ -21,6 +21,7 @@
 <dom-module id="photo-form">
     <template>
         <style include="iron-flex iron-flex-alignment"></style>
+        <style include="paper-material-styles"></style>
         <style>
             .photo-item-label {
                 padding-top: 1.2em;
@@ -56,14 +57,14 @@
             <strong class="photo-item-label">Albums</strong>
                 <div class="layout horizontal wrap">
                     <template is="dom-repeat" items="[[photo.albums]]">
-                        <paper-material class="album-item">
+                        <div class="paper-material album-item" elevation="1">
                             <paper-icon-button
                                     icon="icons:cancel"
                                     data-index$="[[index]]"
                                     on-tap="remove_album">
                             </paper-icon-button>
                             <span>[[item]]</span>
-                        </paper-material>
+                        </div>
                     </template>
                 </div>
 

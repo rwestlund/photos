@@ -8,8 +8,8 @@
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../bower_components/paper-styles/element-styles/paper-material-styles.html">
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
 <link rel="import" href="cookie-display.html">
@@ -18,6 +18,7 @@
 
 <dom-module id="photo-display">
     <template>
+        <style include="paper-material-styles"></style>
         <style include="global-styles"></style>
         <style>
             :host {
@@ -52,7 +53,7 @@
         <cookie-display cookie-name="role" cookie-value="{{user_role}}">
         </cookie-display>
 
-        <paper-material class="card-item">
+        <div class="paper-material card-item" elevation="1">
             <template is="dom-if" if="[[user_is_admin(user_role)]]">
                 <paper-icon-button icon="icons:create" on-tap="edit_photo">
                 </paper-icon-button>
@@ -73,7 +74,7 @@
                     <a href="/albums/[[item]]" class="plain">[[item]]</a>
                 </template>
             </p>
-        </paper-material>
+        </div>
     </template>
 
     <script>
