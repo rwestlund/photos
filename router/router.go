@@ -38,7 +38,7 @@ func NewRouter() *mux.Router {
 		Handler(Logger(ServeIndex, "path"))
 
 	// Add route to handle static files.
-	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./build/unbundled")))
+	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./build/default")))
 
 	return router
 }
@@ -48,5 +48,5 @@ func NewRouter() *mux.Router {
 var ServeIndex = http.HandlerFunc(func(res http.ResponseWriter,
 	req *http.Request) {
 	log.Println("serving index!")
-	http.ServeFile(res, req, "./build/unbundled/index.html")
+	http.ServeFile(res, req, "./build/default/index.html")
 })
