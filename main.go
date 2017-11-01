@@ -8,17 +8,18 @@
 package main
 
 import (
+	"log"
+	"net/http"
+
 	"github.com/rwestlund/photos/config"
 	"github.com/rwestlund/photos/db"
 	"github.com/rwestlund/photos/router"
-	"log"
-	"net/http"
 )
 
 func main() {
 	db.Init()
 	/* Create router from routes.go. */
-	my_router := router.NewRouter()
+	myRouter := router.NewRouter()
 	log.Println("starting server on " + config.ListenAddress)
-	http.ListenAndServe(config.ListenAddress, my_router)
+	log.Fatal(http.ListenAndServe(config.ListenAddress, myRouter))
 }
