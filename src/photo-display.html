@@ -129,12 +129,19 @@
                 console.log("failed to update")
             },
             set_album_image: function() {
-                this.fire("set-album-image", this.photo.id);
+                this.dispatchEvent(new CustomEvent("set-album-image", {
+                    bubbles: true,
+                    composed: true,
+                    detail: this.photo.id,
+                }));
             },
             // Opens the big thumbnail display.
             display_big_photo: function() {
-                // Ask for the big thumbnail display to be opened.
-                this.fire("expand-photo", this.photo.id);
+                this.dispatchEvent(new CustomEvent("expand-photo", {
+                    bubbles: true,
+                    composed: true,
+                    detail: this.photo.id,
+                }));
             },
         })
     </script>

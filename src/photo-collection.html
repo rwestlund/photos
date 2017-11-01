@@ -168,18 +168,18 @@
             put_item_failed: function() {
                 console.log("failed to update")
             },
-            set_album_image: function(e, photo_id) {
+            set_album_image: function(e) {
                 this.set('item_to_edit', JSON.parse(JSON.stringify(this.album)));
-                this.item_to_edit.cover_image_id = photo_id;
+                this.item_to_edit.cover_image_id = e.detail;
                 this.$$("#put_ajax").generateRequest();
             },
             // Opens the big thumbnail display.
-            show_big_thumbnail: function(e, photo_id) {
+            show_big_thumbnail: function(e) {
                 // Ask for the big thumbnail display to be opened.
                 window.dispatchEvent(new CustomEvent("open-form", {
                     detail: {
                         name: "expand_photo_form",
-                        photoId: photo_id,
+                        photoId: e.detail,
                         photoList: this.photos,
                     },
                 }));

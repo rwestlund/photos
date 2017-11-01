@@ -279,8 +279,8 @@
                     }));
                 },
                 // Simply remove the element from the DOM.
-                remove_item: function(e, item) {
-                    this.splice('items', this.items.indexOf(item), 1);
+                remove_item: function(e) {
+                    this.splice('items', this.items.indexOf(e.detail), 1);
                 },
                 previous: function() {
                     if (this.skip) this.skip--;

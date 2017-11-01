@@ -54,9 +54,9 @@
                 window.removeEventListener("open-form", this._form_listener);
             },
             // On close, notify the element that asked for the form.
-            dialog_closed: function(e, reason) {
+            dialog_closed: function(e) {
                 if (this.dialog_parent)
-                    this.dialog_parent[this.dialog_callback](e, reason);
+                    this.dialog_parent[this.dialog_callback](e, e.detail);
             },
 
             // Open whichever form was requested by the event.

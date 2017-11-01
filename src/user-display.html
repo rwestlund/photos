@@ -184,7 +184,11 @@
                     // Ask the parent element to delete this item. It can't be
                     // done here because this whole element needs to be
                     // removed.
-                    this.fire('delete-item', this.user);
+                    this.dispatchEvent(new CustomEvent("delete-item", {
+                        bubbles: true,
+                        composed: true,
+                        detail: this.user,
+                    }));
                 },
                 delete_item_failed: function(e, data) {
                     if (data.error) this.check_ajax_status(data.request);
