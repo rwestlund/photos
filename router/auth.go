@@ -23,10 +23,10 @@ import (
 )
 
 // Build OAuth2 configuration.
-var conf *oauth2.Config = &oauth2.Config{
+var conf = &oauth2.Config{
 	ClientID:     config.OAuthClientID,
 	ClientSecret: config.OAuthClientSecret,
-	RedirectURL:  "https://" + config.LocalHostName + "/auth/google/return",
+	RedirectURL:  "https://" + config.LocalHostName + "/api/auth/google/return",
 	Scopes:       []string{"profile", "email"},
 	Endpoint:     google.Endpoint,
 }
@@ -198,7 +198,7 @@ func handleLogout(res http.ResponseWriter, req *http.Request) {
 	authCookie, err = req.Cookie("authentication")
 	// If there is no auth cookie, skip deleting it and just return success.
 	if err == nil {
-		var e error = db.UserLogout(authCookie.Value)
+		var e = db.UserLogout(authCookie.Value)
 		if e != nil {
 			log.Println(err)
 			res.WriteHeader(500)
