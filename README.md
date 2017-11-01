@@ -1,38 +1,61 @@
-# \<photos\>
+# Photos
+Photos is a web application for sharing family photos, built with Polymer and
+Go. Our deployment is at
+[https://photos.textplain.net](https://photos.textplain.net).
 
+# Run Dependencies
+- PostgreSQL >= 9.5
+- NGINX
 
+# Build Dependencies
+- Go
+- Node.js and NPM
 
-## Install the Polymer-CLI
+# Installation
+- Check out this repo under your `$GOPATH`
+- Set values in `config/config.go`
+- Run `govendor sync`
+- Run `npm install`
+- Run `npm run bower install`
+- Run `npm run polymer build`
+- Run `go build`
+- Run `go run tools/createdb/main.go`
+- Run `go run tools/resetdb/main.go`
+- Run `./photos`
+- Add a block like this to your NGINX config:
+    ```nginx
+    server {
+        listen 443 ssl;
+        server_name photos.textplain.net;
+        ssl_certificate /usr/local/etc/letsencrypt/live/photos.textplain.net/fullchain.pem;
+        ssl_certificate_key /usr/local/etc/letsencrypt/live/photos.textplain.net/privkey.pem;
 
-First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your application locally.
+        client_max_body_size 100M;
+        proxy_request_buffering off;
+        add_header Cache-Control "public, max-age=0";
+        root /usr/home/randy/go/src/github.com/rwestlund/photos/build/default/;
 
-## Viewing Your Application
+        location /s/ {
+            alias /usr/home/randy/go/src/github.com/rwestlund/photos/build/default/;
+        }
+        location /api/ {
+            proxy_pass http://localhost:3000;
+        }
+        # Support refresh when client routes leak to server.
+        location / {
+            rewrite ^ /s/index.html;
+        }
+        location /service-worker.js {
+            rewrite ^ /s/service-worker.js;
+        }
+    }
+    ```
 
-```
-$ polymer serve
-```
+Optionally, use [paladin](https://github.com/rwestlund/paladin) to supervise
+it.
 
-## Building Your Application
+# Testing
+Run `govendor test --cover +local`.
 
-```
-$ polymer build
-```
-
-This will create a `build/` folder with `bundled/` and `unbundled/` sub-folders
-containing a bundled (Vulcanized) and unbundled builds, both run through HTML,
-CSS, and JS optimizers.
-
-You can serve the built versions by giving `polymer serve` a folder to serve
-from:
-
-```
-$ polymer serve build/bundled
-```
-
-## Running Tests
-
-```
-$ polymer test
-```
-
-Your application is already set up to be tested via [web-component-tester](https://github.com/Polymer/web-component-tester). Run `polymer test` to run your application's test suite locally.
+# License
+BSD-2-Clause
