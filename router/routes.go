@@ -14,7 +14,6 @@ import (
 
 // Route contains the information needed for each Route.
 type Route struct {
-	name    string
 	methods []string
 	pattern string
 	handler http.HandlerFunc
@@ -26,124 +25,104 @@ type Routes []Route
 // Define the actual routes here.
 var routes = Routes{
 	Route{
-		"auth",
 		[]string{"GET"},
 		"/auth/google/login",
 		oauthRedirect,
 	},
 	Route{
-		"auth",
 		[]string{"GET"},
 		"/auth/google/return",
 		handleOauthCallback,
 	},
 	Route{
-		"logout",
 		[]string{"GET"},
 		"/auth/logout",
 		handleLogout,
 	},
 	Route{
-		"photo",
 		[]string{"GET", "HEAD"},
-		"/api/photos/{id:[0-9]+}",
+		"/photos/{id:[0-9]+}",
 		handlePhoto,
 	},
 	Route{
-		"photo",
 		[]string{"GET", "HEAD"},
-		"/api/photos/{id:[0-9]+}/image",
+		"/photos/{id:[0-9]+}/image",
 		handlePhotoImage,
 	},
 	Route{
-		"photo",
 		[]string{"GET", "HEAD"},
-		"/api/photos/{id:[0-9]+}/thumbnail",
+		"/photos/{id:[0-9]+}/thumbnail",
 		handlePhotoThumbnail,
 	},
 	Route{
-		"photo",
 		[]string{"GET", "HEAD"},
-		"/api/photos/{id:[0-9]+}/big_thumbnail",
+		"/photos/{id:[0-9]+}/big_thumbnail",
 		handlePhotoBigThumbnail,
 	},
 	Route{
-		"photos",
 		[]string{"GET", "HEAD"},
-		"/api/photos",
+		"/photos",
 		handlePhotos,
 	},
 	Route{
-		"users",
 		[]string{"GET", "HEAD"},
-		"/api/users",
+		"/users",
 		handleUsers,
 	},
 	Route{
-		"photos",
 		[]string{"POST"},
-		"/api/photos",
+		"/photos",
 		handlePostPhoto,
 	},
 	Route{
-		"photos",
 		[]string{"PUT"},
-		"/api/photos/{id:[0-9]+}",
+		"/photos/{id:[0-9]+}",
 		handlePutPhoto,
 	},
 	Route{
-		"photos",
 		[]string{"DELETE"},
-		"/api/photos/{id:[0-9]+}",
+		"/photos/{id:[0-9]+}",
 		handleDeletePhoto,
 	},
 	Route{
-		"users",
 		[]string{"POST"},
-		"/api/users",
+		"/users",
 		handlePostOrPutUser,
 	},
 	Route{
-		"users",
 		[]string{"POST"},
-		"/api/users",
+		"/users",
 		handlePostOrPutUser,
 	},
 	Route{
-		"users",
 		[]string{"PUT"},
-		"/api/users/{id:[0-9]+}",
+		"/users/{id:[0-9]+}",
 		handlePostOrPutUser,
 	},
 	Route{
-		"users",
 		[]string{"DELETE"},
-		"/api/users/{id:[0-9]+}",
+		"/users/{id:[0-9]+}",
 		handleDeleteUser,
 	},
 	Route{
-		"albums",
 		[]string{"GET", "HEAD"},
-		"/api/albums",
+		"/albums",
 		handleGetAlbums,
 	},
 	Route{
-		"albums",
 		[]string{"POST"},
-		"/api/albums",
+		"/albums",
 		handlePostAlbums,
 	},
 	Route{
-		"albums",
 		[]string{"PUT"},
-		"/api/albums/{name:[A-z][^/]*}",
+		"/albums/{name:[A-z][^/]*}",
 		handlePutAlbums,
 	},
 
 	Route{
-		"albums",
 		[]string{"GET"},
-		"/api/albums/{album_name:[A-z][^/]*}",
+		"/albums/{album_name:[A-z][^/]*}",
 		handleGetAlbum,
 	},
 }
