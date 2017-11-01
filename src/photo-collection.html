@@ -139,14 +139,14 @@
             edit_album: function() {
                 this.set('item_to_edit', JSON.parse(JSON.stringify(this.album)));
                 // Ask for the form to be opened.
-                this.fire("iron-signal", { name: "open-form",
-                    data: {
+                window.dispatchEvent(new CustomEvent("open-form", {
+                    detail: {
                         name: "edit_album_form",
                         album: this.item_to_edit,
                         callback: "resolve_edit_album",
                         that: this,
                     },
-                });
+                }));
             },
             resolve_edit_album: function (e, reason) {
                 if(!reason.confirmed) return;
@@ -176,13 +176,13 @@
             // Opens the big thumbnail display.
             show_big_thumbnail: function(e, photo_id) {
                 // Ask for the big thumbnail display to be opened.
-                this.fire("iron-signal", { name: "open-form",
-                    data: {
+                window.dispatchEvent(new CustomEvent("open-form", {
+                    detail: {
                         name: "expand_photo_form",
                         photoId: photo_id,
                         photoList: this.photos,
                     },
-                });
+                }));
             },
         })
     </script>

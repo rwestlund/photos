@@ -95,14 +95,14 @@
                 this.set('item_to_edit',
                         JSON.parse(JSON.stringify(this.photo)));
                 // Ask for the form to be opened.
-                this.fire("iron-signal", { name: "open-form",
-                    data: {
+                window.dispatchEvent(new CustomEvent("open-form", {
+                    detail: {
                         name: "edit_photo_form",
                         photo: this.item_to_edit,
                         callback: "resolve_edit_photo",
                         that: this,
                     },
-                });
+                }));
             },
             // Handle response from dialog. Reason is either confirmed or
             // canceled.

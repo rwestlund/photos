@@ -79,14 +79,14 @@
                 this.set("edit_albums_selected",
                         JSON.parse(JSON.stringify(this.albums_selected)));
                 // Ask for the form to be opened.
-                this.fire("iron-signal", { name: "open-form",
-                    data: {
+                window.dispatchEvent(new CustomEvent("open-form", {
+                    detail: {
                         name:               "select_album_form",
                         selectedAlbums:     this.edit_albums_selected,
                         that:               this,
                         callback:           "resolve_album_select_dialog",
                     },
-                });
+                }));
             },
             handle_upload_request: function(e, data) {
                 data.formData.append("albums",

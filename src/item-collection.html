@@ -229,7 +229,9 @@
                             break;
                     }
                     // Ask for the form to be opened, whichever one it is.
-                    this.fire("iron-signal", { name: "open-form", data: data });
+                    window.dispatchEvent(new CustomEvent("open-form", {
+                        detail: data
+                    }));
                 },
                 // Handle response from dialog. Reason is either confirmed or
                 // canceled.
@@ -245,24 +247,22 @@
                     // This isn't in shorter form like the one below because
                     // some pages need to change the route.
                     if (this.itemName === "customers") {
-                        this.fire("iron-signal", {
-                            name: "success-toast",
-                            data: "Customer " +
+                        window.dispatchEvent(new CustomEvent("success-toast", {
+                            detail: "Customer " +
                                 this.customer_full_name(this.new_item) +
                                 " created",
-                        });
+                        }));
                         // Go to the customers page for the new customer.
                         window.history.pushState({}, null,
                                 "/customers/" + this.new_item.id);
                         window.dispatchEvent(new CustomEvent("location-changed"));
                     }
                     else if(this.itemName === "users") {
-                        this.fire("iron-signal", {
-                            name: "success-toast",
-                            data: this.new_item.role + " " +
+                        window.dispatchEvent(new CustomEvent("success-toast", {
+                            detail: this.new_item.role + " " +
                                     (this.new_item.name || this.new_item.email)
                                     + " created",
-                        });
+                        }));
                         this.push("items", this.new_item);
                     }
                 },
@@ -274,10 +274,9 @@
                     else if (this.itemName === "users")
                         msg = "Failed to create user :(";
 
-                    this.fire("iron-signal", {
-                        name: "error-toast",
-                        data: msg,
-                    });
+                    window.dispatchEvent(new CustomEvent("error-toast", {
+                        detail: msg,
+                    }));
                 },
                 // Simply remove the element from the DOM.
                 remove_item: function(e, item) {

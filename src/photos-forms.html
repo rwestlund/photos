@@ -4,7 +4,6 @@
     This code is under the BSD-2-Clause license.
 -->
 
-<link rel="import" href="../bower_components/iron-signals/iron-signals.html">
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
 <link rel="import" href="album-form.html">
@@ -16,8 +15,6 @@
 
 <dom-module id="photos-forms">
     <template>
-        <iron-signals on-iron-signal-open-form="open_form"></iron-signals>
-
         <photo-form id="edit_photo_form"></photo-form>
         <user-form id="create_user_form" title="Create new user"></user-form>
         <user-form id="edit_user_form"></user-form>
@@ -49,28 +46,35 @@
                 // here.
                 "closed": "dialog_closed",
             },
+            attached: function() {
+                this._form_listener = this.open_form.bind(this);
+                window.addEventListener("open-form", this._form_listener);
+            },
+            detached: function() {
+                window.removeEventListener("open-form", this._form_listener);
+            },
             // On close, notify the element that asked for the form.
             dialog_closed: function(e, reason) {
                 if (this.dialog_parent)
                     this.dialog_parent[this.dialog_callback](e, reason);
             },
 
-            // Open whichever form was requested by iron-signals.
-            open_form: function(e, data) {
+            // Open whichever form was requested by the event.
+            open_form: function(e) {
                 // Save a reference to the element that sent the request so we
                 // can tell it when the form closes.
-                this.dialog_parent = data.that;
+                this.dialog_parent = e.detail.that;
                 // Save the callback.
-                this.dialog_callback = data.callback;
-                // If any of these properties are given from the signal, assign
+                this.dialog_callback = e.detail.callback;
+                // If any of these properties are given from the event, assign
                 // them to the form. This prevents needing a large switch to set
                 // up each form.
                 var props = [ "photo", "album", "user", "selectedAlbums",
                         "photoId", "photoList" ];
                 props.forEach(p => {
-                    if (data[p]) this.$[data.name][p] = data[p];
+                    if (e.detail[p]) this.$[e.detail.name][p] = e.detail[p];
                 });
-                this.$[data.name].open();
+                this.$[e.detail.name].open();
             }
         })
     </script>
