@@ -8,56 +8,38 @@
 
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
-<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
+<link rel="import" href="form-behavior.html">
 <link rel="import" href="global-behavior.html">
 <link rel="import" href="global-styles.html">
 <link rel="import" href="user-display.html">
 
 <dom-module id="item-collection">
     <template>
-        <style include="iron-flex"></style>
+        <style include="iron-flex iron-flex-alignment iron-flex-reverse"></style>
         <style include="global-styles"></style>
         <style>
             :host {
                 display: block;
             }
-            paper-input {
+            .nav-buttons {
+                margin-top: 5px;
+                margin-left: 2em;
+            }
+            .search-box {
                 min-width: 10em;
             }
-            .nav-button {
-                margin-left: 0.8em;
-                margin-right: 0.8em;
+            .nav-buttons paper-icon-button {
+                padding-bottom: 0px;
             }
-            /* Buttons will expand and shrink between these limits depending
-               on screen size. */
-            .nav-buttons {
-                min-width: 19em;
-                max-width: 25em;
-            }
-            .nav-buttons paper-button {
-                min-width: 3em;
-                max-width: 5em;
-            }
-            .search-row {
-                min-width: 19em;
-            }
-            .global-filters {
-                margin-top: 1em;
-            }
-            /* The main flex groups need this to wrap properly on iOS. */
-            .global-filters > div {
-                flex: 1 0 auto;
-            }
-
         </style>
 
         <iron-media-query query="(max-width: 600px)"
@@ -88,33 +70,37 @@
                 loading="{{loading.post_item}}">
         </iron-ajax>
 
-        <div class="layout horizontal center wrap global-filters">
+        <div class="layout horizontal-reverse center end wrap">
             <!-- Navigation icons. -->
-            <div class="layout horizontal center flex nav-buttons">
-                <paper-spinner class="nav-button" active="[[loading_data]]">
+            <div class="layout horizontal center nav-buttons">
+                <paper-spinner class="nav-button" active="[[loading.get_items]]">
                 </paper-spinner>
+                <paper-icon-button icon="icons:refresh" on-tap="refresh">
+                </paper-icon-button>
+                <paper-icon-button
+                        icon="icons:arrow-back"
+                        disabled$="[[!skip]]"
+                        on-tap="previous">
+                </paper-icon-button>
+                <paper-icon-button
+                        icon="icons:arrow-forward"
+                        disabled$="[[disable_next]]"
+                        on-tap="next">
+                </paper-icon-button>
                 <div class="nav-button">Page&nbsp;[[page_number]]</div>
-                <paper-button class="flex" raised on-tap="refresh">
-                    <iron-icon icon="icons:refresh"></iron-icon>
-                </paper-button>
-                <paper-button class="flex" raised on-tap="previous"
-                        disabled$="[[!skip]]">
-                    <iron-icon icon="icons:arrow-back"></iron-icon>
-                </paper-button>
-                <paper-button class="flex" raised on-tap="next"
-                        disabled$="[[disable_next]]">
-                    <iron-icon icon="icons:arrow-forward"></iron-icon>
-                </paper-button>
             </div>
             <!-- Search box. -->
-            <div class="layout horizontal center flex search-row">
-                <paper-input class="flex" label="Filter" no-label-float
-                    type="text" value="{{search_text}}">
-                    <paper-icon-button suffix icon="icons:clear"
-                            on-tap="clear_text" data-clear="search_text">
-                    </paper-icon-button>
-                </paper-input>
-            </div>
+            <paper-input
+                    type="text"
+                     class="flex search-box"
+                     label="Search"
+                     no-label-float
+                    value="{{search_text}}">
+                <paper-icon-button suffix
+                        icon="icons:clear"
+                        on-tap="clear_field">
+                </paper-icon-button>
+            </paper-input>
         </div>
 
         <!-- Display a list of whichever item we're showing. -->
@@ -142,17 +128,20 @@
 
         <!-- Show bottom buttons if there are several items listed. -->
         <template is="dom-if" if="[[show_bottom_buttons(items)]]">
-            <div class="layout horizontal-reverse center wrap">
-                <!-- Navigation icons. -->
-                <paper-button raised on-tap="next" disabled$="[[disable_next]]">
-                    <iron-icon icon="icons:arrow-forward"></iron-icon>
-                </paper-button>
-                <paper-button raised on-tap="previous" disabled$="[[!skip]]">
-                    <iron-icon icon="icons:arrow-back"></iron-icon>
-                </paper-button>
-                <div class="nav-button">Page {{page_number}}</div>
-                <paper-spinner class="nav-button" active="[[loading_data]]">
+            <div class="layout horizontal end-justified center nav-buttons">
+                <paper-spinner class="nav-button" active="[[loading.get_items]]">
                 </paper-spinner>
+                <paper-icon-button
+                        icon="icons:arrow-back"
+                        disabled$="[[!skip]]"
+                        on-tap="previous">
+                </paper-icon-button>
+                <paper-icon-button
+                        icon="icons:arrow-forward"
+                        disabled$="[[disable_next]]"
+                        on-tap="next">
+                </paper-icon-button>
+                <div class="nav-button">Page&nbsp;[[page_number]]</div>
             </div>
         </template>
     </template>
@@ -162,32 +151,19 @@
             'use strict';
             Polymer({
                 is: 'item-collection',
-                behaviors: [ photo_behaviors.global_behavior ],
+                behaviors: [ photo_behaviors.global_behavior,
+                            photo_behaviors.form_behavior ],
                 properties: {
-                    // The parent provides 'jobs' or 'customers' here.
-                    itemName: {
-                        type: String,
-                    },
-                    items: {
-                        type: Array,
-                        value: [],
-                    },
-                    count: {
-                        type: Number,
-                        value: 20
-                    },
-                    skip: {
-                        type: Number,
-                        value: 0
-                    },
+                    // The parent provides 'users' or 'albums' here.
+                    itemName: { type: String, },
+                    items: { type: Array, },
+                    count: { type: Number, value: 20 },
+                    skip: { type: Number, value: 0 },
                     page_number: {
                         type: Number,
                         computed: "compute_page_number(skip)"
                     },
-                    search_text: {
-                        type: String,
-                        value: ''
-                    },
+                    search_text: { type: String, },
                     search_filter: {
                         type: Object,
                         computed: "compute_search_filter(count, skip, "
