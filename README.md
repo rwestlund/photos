@@ -19,9 +19,8 @@ Go. Our deployment is at
 - Run `npm run bower install`
 - Run `npm run polymer build`
 - Run `go build`
-- Run `go run tools/createdb/main.go`
-- Run `go run tools/resetdb/main.go`
-- Run `./photos`
+- Run `./photos createdb`
+- Run `./photos launch`
 - Add a block like this to your NGINX config:
     ```nginx
     server {
