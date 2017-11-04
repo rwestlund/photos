@@ -14,6 +14,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/rwestlund/photos/db"
 	"github.com/rwestlund/photos/defs"
@@ -136,7 +137,7 @@ func handleOauthCallback(res http.ResponseWriter, req *http.Request) {
 	// The client will display this.
 	var nameCookie = http.Cookie{
 		Name:   "username",
-		Value:  user.Name,
+		Value:  strings.Split(user.Name, " ")[0],
 		Path:   "/",
 		Secure: true,
 	}
