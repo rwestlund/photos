@@ -29,12 +29,10 @@ import (
 // buildItemFilder takes a url.URL object from req.URL and fills an ItemFilter.
 func buildItemFilter(url *url.URL) *defs.ItemFilter {
 	// We can ignore the error because count=0 means disabled.
-	var bigcount uint64
-	bigcount, _ = strconv.ParseUint(url.Query().Get("count"), 10, 32)
-	var bigskip uint64
-	bigskip, _ = strconv.ParseUint(url.Query().Get("skip"), 10, 32)
+	var bigcount, _ = strconv.ParseUint(url.Query().Get("count"), 10, 32)
+	var bigskip, _ = strconv.ParseUint(url.Query().Get("skip"), 10, 32)
 	// Build ItemFilter from query params.
-	var filter defs.ItemFilter = defs.ItemFilter{
+	var filter = defs.ItemFilter{
 		Query: url.Query().Get("query"),
 		Count: uint32(bigcount),
 		Skip:  uint32(bigskip),
@@ -50,9 +48,7 @@ func handlePhotos(res http.ResponseWriter, req *http.Request) {
 
 	var filter = buildItemFilter(req.URL)
 
-	var photos *[]defs.Photo
-	var err error
-	photos, err = db.FetchPhotos(filter)
+	var photos, err = db.FetchPhotos(filter)
 	if err != nil {
 		log.Println(err)
 		res.WriteHeader(500)
@@ -72,9 +68,7 @@ func handlePhotos(res http.ResponseWriter, req *http.Request) {
 // PUT /api/photos/4
 func handlePutPhoto(res http.ResponseWriter, req *http.Request) {
 	// Access control.
-	var usr *defs.User
-	var err error
-	usr, err = checkAuth(res, req)
+	var usr, err = checkAuth(res, req)
 	if err != nil {
 		res.WriteHeader(500)
 		log.Println(err)
@@ -129,9 +123,7 @@ func handlePutPhoto(res http.ResponseWriter, req *http.Request) {
 // POST /api/photos
 func handlePostPhoto(res http.ResponseWriter, req *http.Request) {
 	// Access control.
-	var err error
-	var usr *defs.User
-	usr, err = checkAuth(res, req)
+	var usr, err = checkAuth(res, req)
 	if err != nil {
 		res.WriteHeader(500)
 		log.Println(err)
@@ -166,9 +158,10 @@ func handlePostPhoto(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// Decode body.
-	var photo defs.Photo
-	photo.Filename = header.Filename
-	photo.Mimetype = header.Header.Get("Content-Type")
+	var photo = defs.Photo{
+		Filename: header.Filename,
+		Mimetype: header.Header.Get("Content-Type"),
+	}
 
 	// Full size image.
 	var photoBuff bytes.Buffer
@@ -184,10 +177,10 @@ func handlePostPhoto(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	// Create small thumbnail.
-	var thumb image.Image = resize.Thumbnail(800, 800, img, resize.Lanczos3)
+	var thumb = resize.Thumbnail(800, 800, img, resize.Lanczos3)
 
 	// Create big thumbnail.
-	var bigThumb image.Image = resize.Thumbnail(1600, 1600, img, resize.Lanczos3)
+	var bigThumb = resize.Thumbnail(1600, 1600, img, resize.Lanczos3)
 
 	// Put thumbnail into a byte arrays for the database.
 	var thumbBuff bytes.Buffer
@@ -259,8 +252,7 @@ func handlePhoto(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	// Get id parameter.
-	var params map[string]string = mux.Vars(req)
-	bigid, err := strconv.ParseUint(params["id"], 10, 32)
+	bigid, err := strconv.ParseUint(mux.Vars(req)["id"], 10, 32)
 	if err != nil {
 		log.Println(err)
 		res.WriteHeader(400)
@@ -295,8 +287,7 @@ func handlePhotoImage(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/binary")
 
 	// Get id parameter.
-	var params map[string]string = mux.Vars(req)
-	bigid, err := strconv.ParseUint(params["id"], 10, 32)
+	bigid, err := strconv.ParseUint(mux.Vars(req)["id"], 10, 32)
 	if err != nil {
 		log.Println(err)
 		res.WriteHeader(400)
@@ -325,8 +316,7 @@ func handlePhotoThumbnail(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/binary")
 
 	// Get id parameter.
-	var params map[string]string = mux.Vars(req)
-	bigid, err := strconv.ParseUint(params["id"], 10, 32)
+	bigid, err := strconv.ParseUint(mux.Vars(req)["id"], 10, 32)
 	if err != nil {
 		log.Println(err)
 		res.WriteHeader(400)
@@ -355,8 +345,7 @@ func handlePhotoBigThumbnail(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/binary")
 
 	// Get id parameter.
-	var params map[string]string = mux.Vars(req)
-	bigid, err := strconv.ParseUint(params["id"], 10, 32)
+	bigid, err := strconv.ParseUint(mux.Vars(req)["id"], 10, 32)
 	if err != nil {
 		log.Println(err)
 		res.WriteHeader(400)
@@ -383,9 +372,7 @@ func handlePhotoBigThumbnail(res http.ResponseWriter, req *http.Request) {
 // DELETE /api/photos/4
 func handleDeletePhoto(res http.ResponseWriter, req *http.Request) {
 	// Access control.
-	var usr *defs.User
-	var err error
-	usr, err = checkAuth(res, req)
+	var usr, err = checkAuth(res, req)
 	if err != nil {
 		res.WriteHeader(500)
 		log.Println(err)
@@ -403,9 +390,8 @@ func handleDeletePhoto(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	// Get id parameter.
-	var params map[string]string = mux.Vars(req)
 	var bigid uint64
-	bigid, err = strconv.ParseUint(params["id"], 10, 32)
+	bigid, err = strconv.ParseUint(mux.Vars(req)["id"], 10, 32)
 	if err != nil {
 		log.Println(err)
 		res.WriteHeader(400)
@@ -431,9 +417,7 @@ func handleDeletePhoto(res http.ResponseWriter, req *http.Request) {
 // GET /api/users
 func handleUsers(res http.ResponseWriter, req *http.Request) {
 	// Access control.
-	var usr *defs.User
-	var err error
-	usr, err = checkAuth(res, req)
+	var usr, err = checkAuth(res, req)
 	if err != nil {
 		res.WriteHeader(500)
 		log.Println(err)
@@ -474,9 +458,7 @@ func handleUsers(res http.ResponseWriter, req *http.Request) {
 // Example: { email: ..., role: ... }
 func handlePostOrPutUser(res http.ResponseWriter, req *http.Request) {
 	// Access control.
-	var usr *defs.User
-	var err error
-	usr, err = checkAuth(res, req)
+	var usr, err = checkAuth(res, req)
 	if err != nil {
 		res.WriteHeader(500)
 		log.Println(err)
@@ -506,8 +488,7 @@ func handlePostOrPutUser(res http.ResponseWriter, req *http.Request) {
 	// Update a user in the database.
 	if req.Method == "PUT" {
 		// Get id parameter.
-		var params map[string]string = mux.Vars(req)
-		bigid, err := strconv.ParseUint(params["id"], 10, 32)
+		bigid, err := strconv.ParseUint(mux.Vars(req)["id"], 10, 32)
 		if err != nil {
 			log.Println(err)
 			res.WriteHeader(400)
@@ -542,9 +523,7 @@ func handlePostOrPutUser(res http.ResponseWriter, req *http.Request) {
 // DELETE /api/users/4
 func handleDeleteUser(res http.ResponseWriter, req *http.Request) {
 	// Access control.
-	var usr *defs.User
-	var err error
-	usr, err = checkAuth(res, req)
+	var usr, err = checkAuth(res, req)
 	if err != nil {
 		res.WriteHeader(500)
 		log.Println(err)
@@ -562,9 +541,8 @@ func handleDeleteUser(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	// Get id parameter.
-	var params map[string]string = mux.Vars(req)
 	var bigid uint64
-	bigid, err = strconv.ParseUint(params["id"], 10, 32)
+	bigid, err = strconv.ParseUint(mux.Vars(req)["id"], 10, 32)
 	if err != nil {
 		log.Println(err)
 		res.WriteHeader(400)
@@ -585,9 +563,7 @@ func handleDeleteUser(res http.ResponseWriter, req *http.Request) {
 }
 
 func handleGetAlbums(res http.ResponseWriter, req *http.Request) {
-	var albums *[]defs.Album
-	var err error
-	albums, err = db.FetchAlbums()
+	var albums, err = db.FetchAlbums()
 	if err != nil {
 		log.Println(err)
 		res.WriteHeader(500)
@@ -604,11 +580,8 @@ func handleGetAlbums(res http.ResponseWriter, req *http.Request) {
 }
 
 func handleGetAlbum(res http.ResponseWriter, req *http.Request) {
-	var album *defs.Album
-	var err error
 	// Get name parameter.
-	var params map[string]string = mux.Vars(req)
-	album, err = db.FetchAlbum(params["albumName"])
+	var album, err = db.FetchAlbum(mux.Vars(req)["albumName"])
 	if err == sql.ErrNoRows {
 		res.WriteHeader(404)
 		return
@@ -630,9 +603,7 @@ func handleGetAlbum(res http.ResponseWriter, req *http.Request) {
 
 func handlePostAlbums(res http.ResponseWriter, req *http.Request) {
 	// Access control.
-	var usr *defs.User
-	var err error
-	usr, err = checkAuth(res, req)
+	var usr, err = checkAuth(res, req)
 	if err != nil {
 		res.WriteHeader(500)
 		log.Println(err)
@@ -681,9 +652,7 @@ func handlePostAlbums(res http.ResponseWriter, req *http.Request) {
 // handlePutAlbums
 func handlePutAlbums(res http.ResponseWriter, req *http.Request) {
 	// Access control.
-	var usr *defs.User
-	var err error
-	usr, err = checkAuth(res, req)
+	var usr, err = checkAuth(res, req)
 	if err != nil {
 		res.WriteHeader(500)
 		log.Println(err)
@@ -712,7 +681,7 @@ func handlePutAlbums(res http.ResponseWriter, req *http.Request) {
 	var newAlbum *defs.Album
 	// Update an album in the database.
 	// Get name parameter.
-	var params map[string]string = mux.Vars(req)
+	var params = mux.Vars(req)
 	newAlbum, err = db.UpdateAlbum(params["name"], &album)
 
 	if err != nil {
