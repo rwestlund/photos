@@ -20,21 +20,19 @@ photo_behaviors.form_behavior = {
     },
     // Handle click on the X suffix for a paper-input. This crawls up the DOM
     // until it finds a paper-input and clears it.
-    clear_field: function(e, p) {
-        // Chrome desktop defines e.path, but Firefox doesn't. Fortunately,
-        // they both define e._path. It's not quite the same, but it works.
-        for (var i = 0; i < e._path.length; i++) {
-            if (e._path[i].localName === "paper-input") {
-                return e._path[i].value = null;
-            }
+    clear_field: function(e) {
+        var elem = e.target;
+        while (elem = elem.parentElement) {
+            if (elem.localName === "paper-input")
+                return elem.value = null;
         }
     },
     // Same, but for a number field.
     clear_number_field: function(e, p) {
-        for (var i = 0; i < e._path.length; i++) {
-            if (e._path[i].localName === "paper-input") {
-                return e._path[i].value = 0;
-            }
+        var elem = e.target;
+        while (elem = elem.parentElement) {
+            if (elem.localName === "paper-input")
+                return elem.value = 0;
         }
     },
 };
