@@ -11,15 +11,19 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/rwestlund/photos/config"
 	"github.com/rwestlund/photos/db"
+	"github.com/rwestlund/photos/defs"
 	"github.com/rwestlund/photos/router"
 )
 
 func main() {
-	db.Init()
+	var config, err = defs.ReadConfigFile()
+	if err != nil {
+		log.Fatal(err)
+	}
+	db.Init(config)
 	/* Create router from routes.go. */
-	myRouter := router.NewRouter()
+	myRouter := router.NewRouter(config)
 	log.Println("starting server on " + config.ListenAddress)
 	log.Fatal(http.ListenAndServe(config.ListenAddress, myRouter))
 }

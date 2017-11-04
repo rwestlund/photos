@@ -15,20 +15,23 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/rwestlund/photos/config"
 	"github.com/rwestlund/photos/db"
 	"github.com/rwestlund/photos/defs"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
 
+var conf *oauth2.Config
+
 // Build OAuth2 configuration.
-var conf = &oauth2.Config{
-	ClientID:     config.OAuthClientID,
-	ClientSecret: config.OAuthClientSecret,
-	RedirectURL:  "https://" + config.LocalHostName + "/api/auth/google/return",
-	Scopes:       []string{"profile", "email"},
-	Endpoint:     google.Endpoint,
+func initAuth(config *defs.Config) {
+	conf = &oauth2.Config{
+		ClientID:     config.OAuthClientID,
+		ClientSecret: config.OAuthClientSecret,
+		RedirectURL:  "https://" + config.LocalHostName + "/api/auth/google/return",
+		Scopes:       []string{"profile", "email"},
+		Endpoint:     google.Endpoint,
+	}
 }
 
 // oauthRedirect handles the first step of the OAuth2 process, redirecting the

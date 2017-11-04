@@ -14,14 +14,14 @@ import (
 
 	// Import the postgres driver.
 	_ "github.com/lib/pq"
-	"github.com/rwestlund/photos/config"
+	"github.com/rwestlund/photos/defs"
 )
 
 // DB is the db handle for this package.
 var DB *sql.DB
 
 // Init connects to the database.
-func Init() {
+func Init(config *defs.Config) {
 	// Connect to database.
 	var err error
 	DB, err = sql.Open("postgres", "user="+config.DatabaseUserName+

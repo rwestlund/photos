@@ -13,10 +13,12 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/rwestlund/photos/defs"
 )
 
 // NewRouter builds a router by iterating over all routes.
-func NewRouter() *mux.Router {
+func NewRouter(config *defs.Config) *mux.Router {
+	initAuth(config)
 	router := mux.NewRouter()
 	var apiRouter = router.PathPrefix("/api/").Subrouter()
 

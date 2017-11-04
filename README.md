@@ -13,7 +13,7 @@ Go. Our deployment is at
 
 # Installation
 - Check out this repo under your `$GOPATH`
-- Set values in `config/config.go`
+- Copy `config.toml.example` to `config.toml` and set your values.
 - Run `govendor sync`
 - Run `npm install`
 - Run `npm run bower install`

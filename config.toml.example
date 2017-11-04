@@ -1,0 +1,18 @@
+# This is the photos config file.
+
+# Format: [address]:port, passed to http.ListenAndServe().
+ListenAddress = ":3000"
+
+# Postgres params.
+DatabaseUserName = "photos"
+DatabaseName = "photos"
+
+# Google OAuth settings.
+OAuthClientID = "your value here!"
+OAuthClientSecret = "your value here!"
+
+# The URL where this server can be found.
+LocalHostName = "photos.textplain.net"
+
+# Users who will be added as admins during setup.
+DefaultAdmins = ["jacqueline.kory@gmail.com", "rwestlun@gmail.com"]
