@@ -31,8 +31,7 @@
             }
         </style>
 
-        <iron-ajax
-            auto
+        <iron-ajax id="get_albums_ajax"
             method="GET"
             url="/api/albums"
             handle-as="json"
@@ -65,8 +64,8 @@
                         vertical-align="top"
                         horizontal-align="right">
                     <paper-listbox slot="dropdown-content"
+                                id="album_dd"
                                 attr-for-selected="value"
-                                selected="{{selected_album}}"
                                 on-iron-select="add_selected_album">
                         <template is="dom-repeat" items="[[albums]]">
                             <paper-item value="[[item.name]]">
@@ -85,16 +84,18 @@
             is: "select-album-form",
             behaviors: [ photo_behaviors.form_behavior ],
             properties: {
-                selectedAlbums: {
-                    type: Array,
-                    value: [],
-                },
+                selectedAlbums: { type: Array, value: () => [] },
+            },
+            open_hook: function() {
+                this.$.get_albums_ajax.generateRequest();
+                this.$.album_dd.selected = null;
             },
             // Add an album to the album list, checking for duplicates first.
             add_selected_album: function() {
                 for (var i in this.selectedAlbums)
-                    if (this.selectedAlbums[i] === this.selected_album) return;
-                this.push('selectedAlbums', this.selected_album);
+                    if (this.selectedAlbums[i] === this.$.album_dd.selected)
+                        return;
+                this.push('selectedAlbums', this.$.album_dd.selected);
             },
             remove_album: function(e) {
                 var index = Number(

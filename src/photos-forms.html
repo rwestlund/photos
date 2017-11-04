@@ -9,7 +9,6 @@
 <link rel="import" href="album-form.html">
 <link rel="import" href="expand-photo-form.html">
 <link rel="import" href="photo-form.html">
-<link rel="import" href="photos-forms.html">
 <link rel="import" href="select-album-form.html">
 <link rel="import" href="user-form.html">
 
@@ -31,14 +30,9 @@
             is: "photos-forms",
             properties: {
                 // A reference to the element that asked to open a form.
-                dialog_parent: {
-                    type: Object,
-                    value: null,
-                },
+                dialog_parent: { type: Object },
                 // The name of the callback function on the requesting element.
-                dialog_callback: {
-                    type: String,
-                },
+                dialog_callback: { type: String },
             },
             listeners: {
                 // Every form fires a "closed" event. Rather than binding a

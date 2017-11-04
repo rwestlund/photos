@@ -6,6 +6,9 @@ var photo_behaviors = photo_behaviors || {};
 /** @polymerBehavior photo_behaviors.form_behavior */
 photo_behaviors.form_behavior = {
     open: function() {
+        // Call an open hook function if it exists. A form may use this to do
+        // setup or trigger AJAX calls.
+        if (this.open_hook) this.open_hook();
         this.$.dialog.open();
     },
     close: function() {
