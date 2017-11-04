@@ -122,7 +122,7 @@ var routes = Routes{
 
 	Route{
 		[]string{"GET"},
-		"/albums/{album_name:[A-z][^/]*}",
+		"/albums/{albumName:[A-z][^/]*}",
 		handleGetAlbum,
 	},
 }
