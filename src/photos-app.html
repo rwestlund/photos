@@ -255,8 +255,7 @@
 
                 <!-- App pages -->
                 <iron-pages selected="[[route_data.page]]"
-                    attr-for-selected="name"
-                    fallback-selection="404">
+                        attr-for-selected="name">
 
                     <section name="">
                          <!-- Recent photos -->
@@ -301,11 +300,6 @@
                             <photos-uploads></photos-uploads>
                         </section>
                     </template>
-
-                    <section name="404">
-                        <span class="page_name">404!</span>
-                    </section>
-
                 </iron-pages>
             </app-header-layout>
         </app-drawer-layout>
