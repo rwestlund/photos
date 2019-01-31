@@ -1,37 +1,37 @@
-<!--
+/*
     Copyright (c) 2016-2017, Randy Westlund and Jacqueline Kory Westlund.
     All rights reserved.
     This code is under the BSD-2-Clause license.
--->
+*/
+import '@polymer/app-layout/app-layout.js';
+import '@polymer/app-route/app-location.js';
+import '@polymer/app-route/app-route.js';
+import '@polymer/iron-ajax/iron-ajax.js';
+import '@polymer/iron-icon/iron-icon.js';
+import '@polymer/iron-icons/iron-icons.js';
+import '@polymer/iron-icons/maps-icons.js';
+import '@polymer/iron-media-query/iron-media-query.js';
+import '@polymer/iron-pages/iron-pages.js';
+import '@polymer/paper-button/paper-button.js';
+import '@polymer/paper-icon-button/paper-icon-button.js';
+import '@polymer/paper-item/paper-item.js';
+import '@polymer/paper-listbox/paper-listbox.js';
+import '@polymer/paper-spinner/paper-spinner.js';
+import '@polymer/polymer/lib/elements/dom-if.js';
+import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
 
-<!-- Polymer library components. -->
-<link rel="import" href="../bower_components/app-layout/app-layout.html">
-<link rel="import" href="../bower_components/app-route/app-location.html">
-<link rel="import" href="../bower_components/app-route/app-route.html">
-<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
-<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
-<link rel="import" href="../bower_components/iron-icons/maps-icons.html">
-<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
-<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
-<link rel="import" href="../bower_components/neon-animation/web-animations.html">
-<link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
-<link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
-<link rel="import" href="../bower_components/polymer/polymer.html">
+import { PhotosMixin } from './photos-mixin.js';
+import './album-collection.js';
+import './cookie-display.js';
+import './global-styles.js';
+import './item-collection.js';
+import './photo-collection.js';
+import './photos-forms.js';
+import './photos-uploads.js';
 
-<link rel="import" href="album-collection.html">
-<link rel="import" href="cookie-display.html">
-<link rel="import" href="global-styles.html">
-<link rel="import" href="item-collection.html">
-<link rel="import" href="photo-collection.html">
-<link rel="import" href="photos-forms.html">
-<link rel="import" href="photos-uploads.html">
-
-<dom-module id="photos-app">
-    <template>
+class PhotosApp extends PhotosMixin(PolymerElement) {
+    static get template() {
+        return html`
         <style include="global-styles"></style>
         <style>
             :host {
@@ -305,60 +305,44 @@
         </app-drawer-layout>
 
         <photos-forms></photos-forms>
-    </template>
-
-    <script>
-        'use strict';
-        Polymer({
-            is: 'photos-app',
-            behaviors: [photo_behaviors.global_behavior],
-            properties: {
+        `;
+    }
+    toggle_drawer() {
+        if (this.$.drawer_layout.narrow) this.$.drawer.toggle();
+    }
+    // Opens the create album modal.
+    create_album() {
+        this.set('item_to_edit', {});
+        // Ask for the form to be opened.
+        window.dispatchEvent(new CustomEvent("open-form", {
+            detail: {
+                name: "create_album_form",
+                album: this.item_to_edit,
+                callback: "resolve_create_album",
+                that: this,
             },
-            ready: function() {
-                console.log("ready");
-            },
-            toggle_drawer: function() {
-                if (this.$.drawer_layout.narrow) this.$.drawer.toggle();
-            },
-            // Opens the create album modal.
-            create_album: function() {
-                this.set('item_to_edit', {});
-                // Ask for the form to be opened.
-                window.dispatchEvent(new CustomEvent("open-form", {
-                    detail: {
-                        name: "create_album_form",
-                        album: this.item_to_edit,
-                        callback: "resolve_create_album",
-                        that: this,
-                    },
-                }));
-            },
-            // Handle response from dialog. Reason is either confirmed or
-            // canceled.
-            resolve_create_album: function(e, reason) {
-                if(!reason.confirmed) return;
-                // Override dirty checking; let Polymer know it changed.
-                var tmp = this.item_to_edit;
-                this.set("item_to_edit", {});
-                this.set("item_to_edit", tmp);
-                this.$.post_ajax.generateRequest();
-            },
-            post_item_successful: function() {
-                console.log("updated");
-            },
-            post_item_failed: function() {
-                console.log("failed to update")
-            },
-            get_page_name: function(page) {
-                switch (page) {
-                    case "": return "Recent Photos";
-                    case "albums": return "Albums";
-                    case "about": return "About";
-                    case "users": return "Users";
-                    case "uploads": return "Uploads";
-                    default: return "Photos";
-                }
-            },
-        });
-    </script>
-</dom-module>
+        }));
+    }
+    // Handle response from dialog. Reason is either confirmed or canceled.
+    resolve_create_album(e, reason) {
+        if(!reason.confirmed) return;
+        // Override dirty checking; let Polymer know it changed.
+        var tmp = this.item_to_edit;
+        this.set("item_to_edit", {});
+        this.set("item_to_edit", tmp);
+        this.$.post_ajax.generateRequest();
+    }
+    post_item_successful() { console.log("updated"); }
+    post_item_failed() { console.log("failed to update") }
+    get_page_name(page) {
+        switch (page) {
+            case "": return "Recent Photos";
+            case "albums": return "Albums";
+            case "about": return "About";
+            case "users": return "Users";
+            case "uploads": return "Uploads";
+            default: return "Photos";
+        }
+    }
+}
+customElements.define("photos-app", PhotosApp);

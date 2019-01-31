@@ -1,19 +1,22 @@
 {
     "entrypoint": "index.html",
-    "shell": "src/photos-app.html",
+    "shell": "src/photos-app.js",
     "sources": [
         "src/**/*"
     ],
     "extraDependencies": [
-        "bower_components/webcomponentsjs/webcomponents-lite.js"
+        "node_modules/@webcomponents/**",
+        "node_modules/web-animations-js/**",
+        "manifest.json"
     ],
     "lint": {
-        "rules": ["polymer-2-hybrid"]
+        "rules": ["polymer-3"]
     },
+    "npm": true,
     "builds": [{
+        "name": "default",
+        "preset": "es5-unbundled",
         "addServiceWorker": false,
-        "html": { "minify": true },
-        "css": { "minify": true },
         "js": { "minify": false, "does true break polymer?": "yes :(" }
     }]
 }

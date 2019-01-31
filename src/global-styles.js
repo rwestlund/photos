@@ -1,10 +1,6 @@
-<!--
-    Copyright (c) 2016, Randy Westlund. All rights reserved.
-    This code is under the BSD-2-Clause license.
--->
-<!-- This defines CSS that is imported by every element. -->
+const $_documentContainer = document.createElement('template');
 
-<dom-module id="global-styles">
+$_documentContainer.innerHTML = `<dom-module id="global-styles">
     <template>
         <style>
             a.plain {
@@ -61,4 +57,18 @@
             }
         </style>
     </template>
-</dom-module>
+</dom-module>`;
+
+document.head.appendChild($_documentContainer.content);
+
+/*
+    Copyright (c) 2016, Randy Westlund. All rights reserved.
+    This code is under the BSD-2-Clause license.
+*/
+/* This defines CSS that is imported by every element. */
+/*
+  FIXME(polymer-modulizer): the above comments were extracted
+  from HTML and may be out of place here. Review them and
+  then delete this comment!
+*/
+;
