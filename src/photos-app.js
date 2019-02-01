@@ -307,6 +307,10 @@ class PhotosApp extends PhotosMixin(PolymerElement) {
         <photos-forms></photos-forms>
         `;
     }
+    // Define importPath, which makes the CSS header path rewrite properly.
+    static get importMeta() {
+        return import.meta;
+    }
     toggle_drawer() {
         if (this.$.drawer_layout.narrow) this.$.drawer.toggle();
     }
