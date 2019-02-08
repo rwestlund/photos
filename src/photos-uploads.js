@@ -56,11 +56,10 @@ class PhotosUploads extends PolymerElement {
             <p></p>
         </template>
 
-        <vaadin-upload target="/api/photos" accept="image/*,video/*" on-upload-request="handle_upload_request">
-            <div class="drop-label">
-                <iron-icon icon="icons:file-upload"></iron-icon>
-                Drag photos here!
-            </div>
+        <vaadin-upload
+                target="/api/photos"
+                accept="image/*,video/*"
+                on-upload-request="handle_upload_request">
         </vaadin-upload>
         `;
     }
