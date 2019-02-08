@@ -6,7 +6,6 @@
 /* This module shows a list of items, with server-side pagination and search. */
 import '@polymer/iron-ajax/iron-ajax.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/iron-icons/iron-icons.js';
 import '@polymer/iron-media-query/iron-media-query.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/paper-fab/paper-fab.js';

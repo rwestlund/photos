@@ -4,7 +4,6 @@
     This code is under the BSD-2-Clause license.
 */
 import '@polymer/iron-ajax/iron-ajax.js';
-import '@polymer/iron-icons/iron-icons.js';
 import '@polymer/iron-image/iron-image.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/paper-spinner/paper-spinner.js';

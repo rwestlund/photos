@@ -4,8 +4,6 @@
     This code is under the BSD-2-Clause license.
 */
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/iron-icon/iron-icon.js';
-import '@polymer/iron-icons/hardware-icons.js';
 import '@polymer/iron-image/iron-image.js';
 import '@polymer/polymer/lib/elements/dom-if.js';
 import { IronOverlayBehavior } from '@polymer/iron-overlay-behavior/iron-overlay-behavior.js';
@@ -28,10 +26,9 @@ class ExpandPhotoForm extends mixinBehaviors([IronOverlayBehavior], PolymerEleme
                 --iron-image-width: 100%;
                 margin: 0px 5px;
             }
-            iron-icon.large-icon {
+            mwc-icon {
                 color: magenta;
-                width: 4em;
-                height: 4em;
+                font-size: 60px;
             }
             div.tall {
                 height: 100%;
@@ -43,16 +40,14 @@ class ExpandPhotoForm extends mixinBehaviors([IronOverlayBehavior], PolymerEleme
 
         <div class="layout horizontal justified center tall">
             <div class="layout horizontal center tall sidebar" on-tap="previous_photo">
-                <iron-icon icon="hardware:keyboard-arrow-left" class="large-icon">
-                </iron-icon>
+                <mwc-icon>keyboard_arrow_left</mwc-icon>
             </div>
             <template is="dom-if" if="[[photoId]]">
                 <iron-image src="/api/photos/[[photoId]]/big_thumbnail" preload="" fade="">
                 </iron-image>
             </template>
             <div class="layout horizontal center tall sidebar" on-tap="next_photo">
-                <iron-icon icon="hardware:keyboard-arrow-right" class="large-icon">
-                </iron-icon>
+                <mwc-icon>keyboard_arrow_right</mwc-icon>
             </div>
         </div>
         `;

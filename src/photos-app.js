@@ -7,9 +7,6 @@ import '@polymer/app-layout/app-layout.js';
 import '@polymer/app-route/app-location.js';
 import '@polymer/app-route/app-route.js';
 import '@polymer/iron-ajax/iron-ajax.js';
-import '@polymer/iron-icon/iron-icon.js';
-import '@polymer/iron-icons/iron-icons.js';
-import '@polymer/iron-icons/maps-icons.js';
 import '@polymer/iron-media-query/iron-media-query.js';
 import '@polymer/iron-pages/iron-pages.js';
 import '@polymer/paper-button/paper-button.js';
@@ -18,6 +15,7 @@ import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-spinner/paper-spinner.js';
 import '@polymer/polymer/lib/elements/dom-if.js';
+import '@material/mwc-icon/mwc-icon.js';
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
 
 import { PhotosMixin } from './photos-mixin.js';
@@ -89,16 +87,9 @@ class PhotosApp extends PhotosMixin(PolymerElement) {
             iron-pages {
                 margin: 15px;
             }
-            paper-listbox iron-icon {
-                margin-right: 1em;
-            }
             paper-listbox a {
                 text-decoration: none;
                 color: #111111;
-            }
-            /* Gray out the nav icons to match the text. */
-            paper-listbox iron-icon {
-                --iron-icon-fill-color: #111111;
             }
             /* For selected menu items in the drawer. */
             paper-listbox .iron-selected paper-item {
@@ -113,12 +104,15 @@ class PhotosApp extends PhotosMixin(PolymerElement) {
                 text-shadow: 1px 1px var(--dark-header-text-color),
                     0 0 5px var(--dark-header-text-color);
             }
-            iron-icon.header {
-                --iron-icon-fill-color: var(--light-header-text-color);
-            }
             paper-icon-button.header {
                 --paper-icon-button-ink-color: var(--light-header-text-color);
                 color: var(--light-header-text-color);
+            }
+            app-header mwc-icon {
+                color: var(--light-header-text-color);
+            }
+            paper-listbox mwc-icon {
+                margin-right: 5px;
             }
         </style>
 
@@ -149,33 +143,34 @@ class PhotosApp extends PhotosMixin(PolymerElement) {
                 <paper-listbox selected="[[route_data.page]]"
                         attr-for-selected="name"
                         on-tap="toggle_drawer">
-                    <a name="" href="/"><paper-item>
-                            <iron-icon icon="image:landscape"></iron-icon>
+                    <a name="" href="/">
+                        <paper-item>
+                            <mwc-icon>photo</mwc-icon>
                             Recent
                         </paper-item>
                     </a>
-                    <a name="albums" href="/albums/"><paper-item>
-                            <iron-icon icon="image:photo-library"></iron-icon>
+                    <a name="albums" href="/albums/">
+                        <paper-item>
+                            <mwc-icon>photo_library</mwc-icon>
                             Albums
                         </paper-item>
                     </a>
-
                     <a name="about" href="/about/">
                         <paper-item>
-                            <iron-icon icon="icons:info"></iron-icon>
+                            <mwc-icon>info</mwc-icon>
                             About
                         </paper-item>
                     </a>
                     <template is="dom-if" if="[[user_is_admin(user_role)]]">
                         <a name="users" href="/users/">
                             <paper-item>
-                                <iron-icon icon="icons:face"></iron-icon>
+                                <mwc-icon>people</mwc-icon>
                                 Users
                             </paper-item>
                         </a>
                         <a name="uploads" href="/uploads/">
                             <paper-item>
-                                <iron-icon icon="icons:file-upload"></iron-icon>
+                                <mwc-icon>cloud_upload</mwc-icon>
                                 Uploads
                             </paper-item>
                         </a>
@@ -184,7 +179,7 @@ class PhotosApp extends PhotosMixin(PolymerElement) {
                 <template is="dom-if" if="[[user_is_admin(user_role)]]">
                     <hr>
                     <paper-button raised on-tap="create_album">
-                        <iron-icon icon="icons:add"></iron-icon>
+                        <mwc-icon>add_photo_alternate</mwc-icon>
                         Album
                     </paper-button>
                     <paper-spinner active="[[loading]]">
@@ -196,7 +191,7 @@ class PhotosApp extends PhotosMixin(PolymerElement) {
                 <template is="dom-if" if="[[!user_name]]">
                     <a href="/api/auth/google/login">
                         <paper-item>
-                            <iron-icon icon="icons:account-circle"></iron-icon>
+                            <mwc-icon>account_circle</mwc-icon>
                             Sign In
                         </paper-item>
                     </a>
@@ -204,7 +199,7 @@ class PhotosApp extends PhotosMixin(PolymerElement) {
                 <template is="dom-if" if="[[user_name]]">
                     <a href="/api/auth/logout">
                         <paper-item>
-                           <iron-icon icon="maps:directions-run"></iron-icon>
+                           <mwc-icon>directions_run</mwc-icon>
                            Logout
                         </paper-item>
                     </a>
@@ -222,8 +217,7 @@ class PhotosApp extends PhotosMixin(PolymerElement) {
                         <div main-title>[[get_page_name(route_data.page)]]</div>
                         <template is="dom-if" if="[[!mobile]]">
                             <template is="dom-if" if="[[user_name]]">
-                                <iron-icon class="header" icon="icons:account-circle">
-                                </iron-icon>
+                                <mwc-icon>account_circle</mwc-icon>
                                 <span class="username">Hi, [[user_name]]!</span>
                             </template>
                         </template>

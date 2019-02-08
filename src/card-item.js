@@ -5,13 +5,11 @@
 */
 
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/iron-icon/iron-icon.js';
-import '@polymer/iron-icons/iron-icons.js';
-import '@polymer/iron-icons/social-icons.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/paper-menu-button/paper-menu-button.js';
 import '@polymer/paper-styles/element-styles/paper-material-styles.js';
 import '@polymer/paper-styles/typography.js';
+import '@material/mwc-icon/mwc-icon.js';
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
 
 class CardItem extends PolymerElement {
@@ -56,14 +54,14 @@ class CardItem extends PolymerElement {
                 padding-right: 7px;
                 padding-bottom: 7px;
             }
-            iron-icon {
-                --iron-icon-fill-color: gray;
+            mwc-icon {
+                color: gray;
             }
         </style>
         <div class="layout horizontal justified start">
             <div class="header layout horizontal wrap end">
                 <slot name="prefix"></slot>
-                <iron-icon icon="[[icon]]" hidden="[[!icon]]"></iron-icon>
+                <mwc-icon hidden="[[!icon]]">[[icon]]</mwc-icon>
                 <span class="title">[[title]]</span>
                 <span class="subtitle">[[subtitle]]</span>
             </div>

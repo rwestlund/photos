@@ -5,10 +5,9 @@
 */
 /* This module shows a user card. */
 import '@polymer/iron-ajax/iron-ajax.js';
-import '@polymer/iron-icon/iron-icon.js';
-import '@polymer/iron-icons/iron-icons.js';
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-dialog/paper-dialog.js';
+import '@material/mwc-icon/mwc-icon.js';
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
 import { GestureEventListeners } from '@polymer/polymer/lib/mixins/gesture-event-listeners.js';
 
@@ -46,14 +45,14 @@ class UserDisplay extends PhotosMixin(GestureEventListeners(PolymerElement)) {
                 loading="{{loading.delete_item}}">
         </iron-ajax>
 
-        <card-item title="[[first_defined(user.name, user.email)]]" icon="social:person">
+        <card-item title="[[first_defined(user.name, user.email)]]" icon="person">
             <paper-listbox slot="dropdown-content">
                 <paper-item on-tap="edit_item">
-                    <iron-icon icon="icons:create"></iron-icon>
+                    <mwc-icon>create</mwc-icon>
                     Edit
                 </paper-item>
                 <paper-item on-tap="open_delete_item_confirmation">
-                    <iron-icon icon="icons:delete"></iron-icon>
+                    <mwc-icon>delete</mwc-icon>
                     Delete
                 </paper-item>
             </paper-listbox>

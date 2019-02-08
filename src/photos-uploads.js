@@ -3,9 +3,7 @@
     All rights reserved.
     This code is under the BSD-2-Clause license.
 */
-import '@polymer/iron-icon/iron-icon.js';
-import '@polymer/iron-icons/image-icons.js';
-import '@polymer/iron-icons/iron-icons.js';
+import '@material/mwc-icon/mwc-icon.js';
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/polymer/lib/elements/dom-if.js';
 import '@polymer/polymer/lib/elements/dom-repeat.js';
@@ -35,14 +33,10 @@ class PhotosUploads extends PolymerElement {
             vaadin-upload[nodrop] {
                 background-color: inherit;
             }
-            paper-button iron-icon {
-                margin-right: 1em;
-            }
-
         </style>
 
         <paper-button raised="" on-tap="select_albums">
-            <iron-icon icon="image:photo-library"></iron-icon>
+            <mwc-icon>photo_album</mwc-icon>
             Set albums for uploads
         </paper-button>
 
