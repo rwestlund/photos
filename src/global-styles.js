@@ -55,6 +55,58 @@ $_documentContainer.innerHTML = `<dom-module id="global-styles">
                 overflow: hidden;
                 word-wrap: break-word;
             }
+
+            .break-word {
+                overflow: hidden;
+                word-wrap: break-word;
+            }
+
+            /* Contains a list of divs. On mobile, stacks with headings and
+               values. On wider screens, looks like a table. */
+            div.infogrid, div.infogrid-wide {
+                display: grid;
+                justify-content: start;
+                column-gap: 1em;
+                /* Firefox 60 still needs the grid- version */
+                grid-column-gap: 1em;
+            }
+            /* These are the headings. */
+            div.infogrid > div:nth-of-type(odd),
+            div.infogrid-wide > div:nth-of-type(odd) {
+                font-weight: bold;
+            }
+            /* Every heading except the first. */
+            div.infogrid > div:nth-of-type(2n+3),
+            div.infogrid-wide > div:nth-of-type(2n+3) {
+                margin-top: 1em;
+            }
+            div.infogrid-wide {
+                @apply --infogrid-wide;
+            }
+            div.infogrid-wide > div:nth-of-type(odd) {
+                @apply --infogrid-children-wide;
+            }
+            @media (min-width: 400px) {
+                div.infogrid {
+                    @apply --infogrid-wide;
+                }
+                div.infogrid > div:nth-of-type(odd) {
+                    @apply --infogrid-children-wide;
+                }
+            }
+            :host {
+                --infogrid-wide: {
+                    grid-template-columns: auto auto;
+                    row-gap: 0.3em;
+                    grid-row-gap: 0.3em;
+                };
+                --infogrid-children-wide: {
+                    text-align: right;
+                    /* Removing the margin from the first child too doesn't
+                       hurt. */
+                    margin-top: 0;
+                };
+            }
         </style>
     </template>
 </dom-module>`;

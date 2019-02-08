@@ -101,7 +101,7 @@ class ItemCollection extends FormMixin(PhotosMixin(PolymerElement)) {
         <template is="dom-if" if="[[equal(itemName, 'users')]]">
             <template is="dom-repeat" items="[[items]]">
                 <!-- This is bound with {{}} because it can edit/PUT data. -->
-                <user-display allow-edit="" user="{{item}}" on-delete-item="remove_item">
+                <user-display user="{{item}}" on-delete-item="remove_item">
                 </user-display>
             </template>
         </template>
