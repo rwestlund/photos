@@ -27,34 +27,6 @@ $_documentContainer.innerHTML = `<dom-module id="global-styles">
                 margin-left: 0.8em;
                 margin-right: 0.8em;
             }
-            .card-title {
-                margin-bottom: 0;
-                margin-top: 0;
-            }
-            iron-icon.large-icon {
-                --iron-icon-width: 4em;
-                --iron-icon-height: 4em;
-                --iron-icon-fill-color: gray;
-            }
-            /* This makes a table able to wrap long normally unbreakable
-               content like email addresses. The two td classes below should be
-               used for data. The 80% width is to allow an icon to the left in
-               a flexbox layout.  */
-            table.fixed-80 {
-                table-layout: fixed;
-                width: 80%;
-            }
-            td.td-label {
-                vertical-align: top;
-                text-align: right;
-                padding-right: 0.8em;
-                /* 4em is long enough for phone|email|fax. */
-                width: 4em;
-            }
-            td.td-field {
-                overflow: hidden;
-                word-wrap: break-word;
-            }
 
             .break-word {
                 overflow: hidden;
