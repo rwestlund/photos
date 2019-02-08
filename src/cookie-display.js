@@ -1,4 +1,4 @@
-/* Copyright (c) 2016, Randy Westlund. All rights reserved. */
+/* Copyright (c) 2016-2019, Randy Westlund. All rights reserved. */
 /* This module shows the current value of a cookie. */
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
 

@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2016. Randy Westlund and Jacqueline Kory Westlund.
+    Copyright (c) 2016-2019. Randy Westlund and Jacqueline Kory Westlund.
     All rights reserved.
     This code is under the BSD-2-Clause license.
 */
